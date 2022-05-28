@@ -1,0 +1,72 @@
+시간: 2022-05-29-00:44:35
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 456, in <module>
+    time.sleep(3)
+KeyboardInterrupt
+
+---------------------------
+
+시간: 2022-05-29-00:46:15
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 446, in <module>
+    winsound.PlaySound("./data/김프의노래.wav", winsound.SND_ALIAS)
+KeyboardInterrupt
+
+---------------------------
+
+시간: 2022-05-29-00:49:22
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 457, in <module>
+    time.sleep(3)
+KeyboardInterrupt
+
+---------------------------
+
+시간: 2022-05-29-00:51:13
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 457, in <module>
+    time.sleep(3)
+KeyboardInterrupt
+
+---------------------------
+
+시간: 2022-05-29-00:53:34
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 458, in <module>
+    time.sleep(3)
+KeyboardInterrupt
+
+---------------------------
+
+시간: 2022-05-29-01:04:27
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 247, in getcoin
+    data['market']["base"]["bid"] = float(base[0])
+NameError: name 'base' is not defined
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 476, in <module>
+    getcoin("SOL")
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 256, in getcoin
+    data['market'] = last['market']
+KeyError: 'market'
+
+---------------------------
+
+시간: 2022-05-29-01:07:19
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 499, in <module>
+    time.sleep(3)
+KeyboardInterrupt
+
+---------------------------
+
