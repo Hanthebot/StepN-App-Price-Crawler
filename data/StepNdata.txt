@@ -1,1 +1,1 @@
-{'default': {'price': 500000}, '709146795': {'price': 600000.0}, '518298248': {'price': 500000}}
+{'default': {'percentage': 0.0, 'ratioMax': 28, 'ratioMin': 26}, '709146795': {'percentage': -10.0, 'ratioMax': 28, 'ratioMin': 26}, '518298248': {'percentage': 0.0, 'ratioMax': 28, 'ratioMin': 26}}

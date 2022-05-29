@@ -118,7 +118,9 @@ def mkIfNone(path):
         except:
             pass
 
-helps = {"가격":"최저가 알림 체크/업데이트 \n예: 가격/가격 400000",
+helps = {"퍼센트":"최저가 알림 체크/업데이트 \n예: 퍼센트/퍼센트 1.0",
+         "max":"SOL/GST 비율 알림 체크/업데이트 \n예: max/max 27.0",
+         "min":"SOL/GST 비율 알림 체크/업데이트 \n예: min/min 27.0",
          "데이터":"프로그램용 내부 크롤링 데이터 출력 \n예: 데이터",
          "유저데이터":"유저 개인 설정 \n예: 데이터",
          "기본데이터":"유저 개인 설정 \n예: 데이터",
@@ -136,7 +138,9 @@ helps_D={"refresh_code":"",
     "whole_data":"",
     "naked_data":"",
     "revive":"",
-    "가격d":"환율 체크/업데이트 \n예: 환율/환율 36.3",
+    "퍼센트d":"최저가 알림 체크/업데이트 \n예: 퍼센트d/퍼센트d 1.0",
+    "maxd":"SOL/GST 비율 알림 체크/업데이트 \n예: maxd/maxd 27.0",
+    "mind":"SOL/GST 비율 알림 체크/업데이트 \n예: mind/mind 27.0",
     "die":"",
     "helpd":"",
     "usaged":""}
@@ -160,6 +164,7 @@ bot =telepot.Bot(Token)
 
 ueharaT = "1500311505:AAEIc6gKWzhBswe-KwIfI6kXVaxtO2cdVfk"
 uehara =telepot.Bot(ueharaT)
+coinlis = ["SOL", "GST", "GMT"]
 
 mkIfNone("./data")
 mkIfNone("./log")
@@ -181,7 +186,9 @@ with open("./data/StepNwhite.txt",'r') as i:
     whitelist = [idd.split("#")[0].replace(' ','') for idd in i.read().split("\n")]
 
 defaultD = {"default": {
-            'price': 500000
+            'percentage': 0.0,
+            'ratioMax': 28,
+            'ratioMin': 26
             }
          }
 global user_data
@@ -225,6 +232,12 @@ def upbit(BTC="BTC", cur="KRW"):
     
     return [hack[0]["orderbook_units"][0]["bid_price"], hack[0]["orderbook_units"][0]["ask_price"], hack[0]["orderbook_units"][0]["bid_size"], hack[0]["orderbook_units"][0]["ask_size"]]
 
+def ftx(BTC="BTC", cur="USD"):
+    htm = requests.get(f"https://ftx.com/api/markets/{BTC}/{cur}/orderbook", headers = {"User-Agent": "Mozilla/5.0"})
+    hack = htm.json()
+    
+    return [hack["result"]["bids"][0][0], hack["result"]["asks"][0][0], hack["result"]["bids"][0][1], hack["result"]["asks"][0][1]]
+
 def fo(a):    
     return "{0:.2f}".format(a).ljust(15)
 
@@ -243,54 +256,78 @@ def oppobool(b):
     else:
         return True
 
-def getcoin(BTC):
-    err = 0
-    prblm = True
-    base = [10^8, 10^8, 10^8, 10^8]
-    while err<10 and prblm:
-        try:
-            base = upbit(BTC, curB) if curB!="" else upbit(BTC)
-            prblm = False
-        except:
-            err+=1
-            time.sleep(0.5)
+def getcoin():
+    base = {BTC : [10**8, 10**8, 10**8, 10**8] for BTC in coinlis}
+    for BTC in coinlis:
+        err = 0
+        prblm = True
+        while err<10 and prblm:
+            try:
+                base[BTC] = ftx(BTC, curB) if curB!="" else ftx(BTC)
+                prblm = False
+            except:
+                err+=1
+                time.sleep(0.5)
     shoesPrice = stepNPrice()
     
     global data
     global user_data
     global ws1
     data['market'] = {
-        "base": {},
+        "base": {BTC: {} for BTC in coinlis},
         "shoesPrice": 0.001
     }
     try:
-        data['market']["base"]["bid"] = float(base[0])
-        data['market']["base"]["ask"] = float(base[1])
+        for BTC in coinlis:
+            data['market']["base"][BTC]["bid"] = float(base[BTC][0])
+            data['market']["base"][BTC]["ask"] = float(base[BTC][1])
         data['market']["shoesPrice"] = shoesPrice
-        data['market']["shoesPriceKRW"] = float(base[1])*shoesPrice
+        data['market']["shoesPriceUSD"] = float(base["SOL"][0])*shoesPrice
+        data['market']["cost"] = (220*float(base["GST"][1]) + 10*float(base["GMT"][1])) * 1.06
+        data['market']["premium"] = (data['market']["shoesPriceUSD"] / data['market']["cost"] - 1) * 100
+        data['market']["SOLGSTRatio"] = float(base["SOL"][0]) / float(base["GST"][1])
         ws1.cell(ws1.max_row, 1, shoesPrice)
-        ws1.cell(ws1.max_row, 2, float(base[0]))
-        ws1.cell(ws1.max_row, 3, float(base[1]))
-        ws1.cell(ws1.max_row, 4, float(base[1])*shoesPrice)
+        ws1.cell(ws1.max_row, 2, data['market']["shoesPriceUSD"])
+        for BTC in coinlis:
+            n = coinlis.index(BTC)
+            ws1.cell(ws1.max_row, 2*n+3, float(base[BTC][0]))
+            ws1.cell(ws1.max_row, 2*n+4, float(base[BTC][1]))
+        ws1.cell(ws1.max_row, 9, data['market']["cost"])
+        ws1.cell(ws1.max_row, 10, data['market']["premium"])
+        ws1.cell(ws1.max_row, 11, data['market']["SOLGSTRatio"])
     except:
         data['market'] = last['market']
 
-def printer(BTC, you='default'):
-    priceColor = "    " + colored(fo2(data['market']["shoesPriceKRW"]), 'green' if data['market']["shoesPriceKRW"] < float(user_data[you]['price']) else 'red')
+def printer(you='default'):
+    pre_col = colored(fo2(data['market']["premium"]), 'green' if data['market']["premium"] > float(user_data[you]['percentage']) else 'red')
+    rat_c = 'red'
+    if data['market']["SOLGSTRatio"] > user_data[you]['ratioMax']:
+        rat_c = 'green'
+    elif data['market']["SOLGSTRatio"] < user_data[you]['ratioMin']:
+        rat_c = 'blue'
+        
+    rat_col = colored(fo2(data['market']["SOLGSTRatio"]), rat_c)
     
     print(f"StepN 최저가:  {data['market']['shoesPrice']} SOL")
-    print(f"{BTC} UP가:  {fo(data['market']['base']['bid'])} {fo2(data['market']['base']['ask'])}")
-    print(f"원화 가격:  {priceColor}원")
-    print("")
+    for BTC in coinlis:
+        print(f"{BTC} FT가:  {fo3(data['market']['base'][BTC]['bid'])} {fo4(data['market']['base'][BTC]['ask'])}")
+    print(f"달러 가격:  {fo2(data['market']['shoesPriceUSD'])} USD")
+    print(f"StepN 원가:  {fo2(data['market']['cost'])} USD")
+    print(f"프리미엄: {pre_col}%")
+    print(f"SOL/GST: {rat_col}")
 
 def final(you='default'):
     print("현재 시각: "+time.strftime('%Y-%m-%d-%H:%M:%S'))
     
-def printerG(BTC, you='default'):
+def printerG(you='default'):
     instantS = ""
     instantS += f"StepN 최저가:  {data['market']['shoesPrice']} SOL"+"\n"
-    instantS += f"{BTC} UP가:  {fo(data['market']['base']['bid'])} {fo2(data['market']['base']['ask'])}"+"\n"
-    instantS += f"원화 가격:  {fo2(data['market']['shoesPriceKRW'])}원"+"\n"
+    for BTC in coinlis:
+        instantS += f"{BTC} FT가:  {fo3(data['market']['base'][BTC]['bid'])} {fo4(data['market']['base'][BTC]['ask'])}"+"\n"
+    instantS += f"달러 가격:  {fo2(data['market']['shoesPriceUSD'])} USD"+"\n"
+    instantS += f"StepN 원가:  {fo2(data['market']['cost'])} USD"+"\n"
+    instantS += f"프리미엄: {fo2(data['market']['premium'])}%"+"\n"
+    instantS += f"SOL/GST: {fo2(data['market']['SOLGSTRatio'])}"+"\n"
     instantS += "\n"
     return instantS
 
@@ -356,22 +393,22 @@ def handle(msg):
             if len(msg['text'].split(" "))>1:
                 content = msg['text'].split(" ")[1].replace("\n","")
                 if number(content):
-                    if command in ["가격"]:
-                        user_data[chat_id]['price'] = float(content)
+                    if command in ["퍼센트", "max", "min"]:
+                        user_data[chat_id][['percentage', 'ratioMax', 'ratioMin'][["퍼센트", "max", "min"].index(command)]] = float(content)
                         saveFile()
                         bot.sendMessage(chat_id, f"{command}->{content}")
                     
                     elif command.lower() in list(helps_D.keys()):
                         if chat_id in owner:
-                            if command in ["가격d"]:
-                                user_data['default']['price'] = float(content)
+                            if command in ["퍼센트d", "maxd", "mind"]:
+                                user_data['default'][['percentage', 'ratioMax', 'ratioMin'][["퍼센트d", "maxd", "mind"].index(command)]] = float(content)
                                 saveFile()
                                 bot.sendMessage(chat_id, f"{command}->{content}")
                                 
                             elif command in ["white_add", "whitelist"]:
                                 if content not in whitelist:
                                     whitelist.append(content)
-                                    m=open("./data/UpBiwhite.txt",'w')
+                                    m=open("./data/StepNwhite.txt",'w')
                                     m.write("\n".join(whitelist))
                                     m.close()
                                     bot.sendMessage(chat_id, f"{content} added")
@@ -389,8 +426,8 @@ def handle(msg):
                     bot.sendMessage(chat_id, f"Message not acceptable")
             #출력
             else:
-                if command in ["가격"]:
-                    content=user_data[chat_id]['price']
+                if command in ["퍼센트", "max", "min"]:
+                    content=user_data[chat_id][['percentage', 'ratioMax', 'ratioMin'][["퍼센트", "max", "min"].index(command)]]
                     bot.sendMessage(chat_id, f"{command}={content}")
                 elif command =="데이터":
                     bot.sendMessage(chat_id, str(data))
@@ -400,13 +437,13 @@ def handle(msg):
                     bot.sendMessage(chat_id,dataFormat(user_data['default']))
                 elif command=="프린트":
                     instant=""
-                    instant+=printerG("SOL", chat_id)+"\n"
-                    instant+=finalG(chat_id)+"\n"
+                    instant+=printerG(chat_id)
+                    instant+=finalG(chat_id)
                     bot.sendMessage(chat_id, instant)
                 elif command=="기본프린트":
                     instant=""
-                    instant+=printerG("SOL", 'default')+"\n"
-                    instant+=finalG('default')+"\n"
+                    instant+=printerG('default')
+                    instant+=finalG('default')
                     bot.sendMessage(chat_id, instant)
                 elif command in ['링크','초대','초대링크']:
                     bot.sendMessage(chat_id, 't.me/'+link)
@@ -449,8 +486,8 @@ def handle(msg):
                         elif command.lower()=="die":
                             bot.sendMessage(chat_id,"See you later")
                             die=True
-                        elif command.lower() in ["가격"]:
-                            content=user_data['default']['price']
+                        elif command.lower() in ["퍼센트d", "maxd", "mind"]:
+                            content=user_data['default'][['percentage', 'ratioMax', 'ratioMin'][["퍼센트d", "maxd", "mind"].index(command)]]
                             bot.sendMessage(chat_id, f"{command}={content}")
                         elif command.lower()=="helpd":
                             bot.sendMessage(chat_id, "command list: "+", ".join(list(helps_D.keys())))
@@ -493,21 +530,31 @@ try:
     while not die:
         if now!=time.strftime("%M"):#for kor
             ws1[f'A{ws1.max_row+1}'] = time.strftime('%Y%m%d%H%M%S')
-            getcoin("SOL")
+            getcoin()
             last = data
             
             print("\n\n\n\n\n\n\n\n\n\n\n\n")
-            printer("SOL")
+            printer()
             final()
             
             for you in us+[default]:
-                data['users'][you]['totalSs'] = printerG("SOL", you) + finalG(you)
-            if data['market']['shoesPriceKRW'] < float(user_data['default']['price']):
+                data['users'][you]['totalSs'] = printerG(you) + finalG(you)
+            if data['market']['premium'] > user_data['default']['percentage']:
+                pass
+                #winsound.PlaySound("./data/김프의노래.wav", winsound.SND_ALIAS)
+            elif data['market']["SOLGSTRatio"] > user_data['default']['ratioMax']:
+                pass
+                #winsound.PlaySound("./data/김프의노래.wav", winsound.SND_ALIAS)
+            elif data['market']["SOLGSTRatio"] < user_data['default']['ratioMin']:
                 pass
                 #winsound.PlaySound("./data/김프의노래.wav", winsound.SND_ALIAS)
             for you in us:
                 try:
-                    if data['market']['shoesPriceKRW'] < float(user_data[you]['price']):
+                    if data['market']['premium'] > user_data[you]['percentage']:
+                        bot.sendMessage(you, data['users'][you]['totalSs'])
+                    if data['market']['SOLGSTRatio'] > user_data[you]['ratioMax']:
+                        bot.sendMessage(you, data['users'][you]['totalSs'])
+                    if data['market']['SOLGSTRatio'] < user_data[you]['ratioMin']:
                         bot.sendMessage(you, data['users'][you]['totalSs'])
                 except:
                     if recentBanDate[you] != time.strftime('%Y-%m-%d'):
