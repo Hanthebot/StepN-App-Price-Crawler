@@ -70,3 +70,437 @@ KeyboardInterrupt
 
 ---------------------------
 
+시간: 2022-05-29-01:16:33
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 499, in <module>
+    time.sleep(3)
+KeyboardInterrupt
+
+---------------------------
+
+시간: 2022-05-29-01:17:12
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 499, in <module>
+    time.sleep(3)
+KeyboardInterrupt
+
+---------------------------
+
+시간: 2022-05-29-01:17:59
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 499, in <module>
+    time.sleep(3)
+KeyboardInterrupt
+
+---------------------------
+
+시간: 2022-05-29-01:18:50
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 499, in <module>
+    time.sleep(3)
+KeyboardInterrupt
+
+---------------------------
+
+시간: 2022-05-29-01:30:15
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 492, in <module>
+    bot.sendMessage(you, data['users'][you]['totalSs'])
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\__init__.py", line 513, in sendMessage
+    return self._api_request('sendMessage', _rectify(p))
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\__init__.py", line 491, in _api_request
+    return api.request((self._token, method, params, files), **kwargs)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\api.py", line 155, in request
+    return _parse(r)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\api.py", line 150, in _parse
+    raise exception.TelegramError(description, error_code, data)
+telepot.exception.TelegramError: ('Bad Request: chat not found', 400, {'ok': False, 'error_code': 400, 'description': 'Bad Request: chat not found'})
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 495, in <module>
+    uehara.sendMessage(developer, f"{name}: {fl(customers,you)} blocked this bot")
+NameError: name 'fl' is not defined
+
+---------------------------
+
+시간: 2022-05-29-01:30:27
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 492, in <module>
+    bot.sendMessage(you, data['users'][you]['totalSs'])
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\__init__.py", line 513, in sendMessage
+    return self._api_request('sendMessage', _rectify(p))
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\__init__.py", line 491, in _api_request
+    return api.request((self._token, method, params, files), **kwargs)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\api.py", line 155, in request
+    return _parse(r)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\api.py", line 150, in _parse
+    raise exception.TelegramError(description, error_code, data)
+telepot.exception.TelegramError: ('Bad Request: chat not found', 400, {'ok': False, 'error_code': 400, 'description': 'Bad Request: chat not found'})
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 495, in <module>
+    uehara.sendMessage(developer, f"{name}: {fl(customers,you)} blocked this bot")
+NameError: name 'fl' is not defined
+
+---------------------------
+
+시간: 2022-05-29-01:30:39
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 492, in <module>
+    bot.sendMessage(you, data['users'][you]['totalSs'])
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\__init__.py", line 513, in sendMessage
+    return self._api_request('sendMessage', _rectify(p))
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\__init__.py", line 491, in _api_request
+    return api.request((self._token, method, params, files), **kwargs)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\api.py", line 155, in request
+    return _parse(r)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\api.py", line 150, in _parse
+    raise exception.TelegramError(description, error_code, data)
+telepot.exception.TelegramError: ('Bad Request: chat not found', 400, {'ok': False, 'error_code': 400, 'description': 'Bad Request: chat not found'})
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 495, in <module>
+    uehara.sendMessage(developer, f"{name}: {fl(customers,you)} blocked this bot")
+NameError: name 'fl' is not defined
+
+---------------------------
+
+시간: 2022-05-29-03:30:29
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\connectionpool.py", line 710, in urlopen
+    chunked=chunked,
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\connectionpool.py", line 449, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 3, in raise_from
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\connectionpool.py", line 444, in _make_request
+    httplib_response = conn.getresponse()
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\http\client.py", line 1331, in getresponse
+    response.begin()
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\http\client.py", line 297, in begin
+    version, status, reason = self._read_status()
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\http\client.py", line 258, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\socket.py", line 586, in readinto
+    return self._sock.recv_into(b)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\ssl.py", line 1009, in recv_into
+    return self.read(nbytes, buffer)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\ssl.py", line 871, in read
+    return self._sslobj.read(len, buffer)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\ssl.py", line 631, in read
+    v = self._sslobj.read(len, buffer)
+ConnectionResetError: [WinError 10054] 현재 연결은 원격 호스트에 의해 강제로 끊겼습니다
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 494, in <module>
+    bot.sendMessage(you, data['users'][you]['totalSs'])
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\__init__.py", line 513, in sendMessage
+    return self._api_request('sendMessage', _rectify(p))
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\__init__.py", line 491, in _api_request
+    return api.request((self._token, method, params, files), **kwargs)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\api.py", line 154, in request
+    r = fn(*args, **kwargs)  # `fn` must be thread-safe
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\request.py", line 170, in request_encode_body
+    return self.urlopen(method, url, **extra_kw)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\poolmanager.py", line 375, in urlopen
+    response = conn.urlopen(method, u.request_uri, **kw)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\connectionpool.py", line 786, in urlopen
+    method, url, error=e, _pool=self, _stacktrace=sys.exc_info()[2]
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\util\retry.py", line 550, in increment
+    raise six.reraise(type(error), error, _stacktrace)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\packages\six.py", line 769, in reraise
+    raise value.with_traceback(tb)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\connectionpool.py", line 710, in urlopen
+    chunked=chunked,
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\connectionpool.py", line 449, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 3, in raise_from
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\connectionpool.py", line 444, in _make_request
+    httplib_response = conn.getresponse()
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\http\client.py", line 1331, in getresponse
+    response.begin()
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\http\client.py", line 297, in begin
+    version, status, reason = self._read_status()
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\http\client.py", line 258, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\socket.py", line 586, in readinto
+    return self._sock.recv_into(b)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\ssl.py", line 1009, in recv_into
+    return self.read(nbytes, buffer)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\ssl.py", line 871, in read
+    return self._sslobj.read(len, buffer)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\ssl.py", line 631, in read
+    v = self._sslobj.read(len, buffer)
+urllib3.exceptions.ProtocolError: ('Connection aborted.', ConnectionResetError(10054, '현재 연결은 원격 호스트에 의해 강제로 끊겼습니다', None, 10054, None))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 497, in <module>
+    uehara.sendMessage(developer, f"{name}: {fl(customers,you)} blocked this bot")
+NameError: name 'fl' is not defined
+
+---------------------------
+
+시간: 2022-05-29-03:52:25
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\connectionpool.py", line 710, in urlopen
+    chunked=chunked,
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\connectionpool.py", line 449, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 3, in raise_from
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\connectionpool.py", line 444, in _make_request
+    httplib_response = conn.getresponse()
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\http\client.py", line 1331, in getresponse
+    response.begin()
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\http\client.py", line 297, in begin
+    version, status, reason = self._read_status()
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\http\client.py", line 258, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\socket.py", line 586, in readinto
+    return self._sock.recv_into(b)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\ssl.py", line 1009, in recv_into
+    return self.read(nbytes, buffer)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\ssl.py", line 871, in read
+    return self._sslobj.read(len, buffer)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\ssl.py", line 631, in read
+    v = self._sslobj.read(len, buffer)
+ConnectionResetError: [WinError 10054] 현재 연결은 원격 호스트에 의해 강제로 끊겼습니다
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 494, in <module>
+    bot.sendMessage(you, data['users'][you]['totalSs'])
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\__init__.py", line 513, in sendMessage
+    return self._api_request('sendMessage', _rectify(p))
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\__init__.py", line 491, in _api_request
+    return api.request((self._token, method, params, files), **kwargs)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\api.py", line 154, in request
+    r = fn(*args, **kwargs)  # `fn` must be thread-safe
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\request.py", line 170, in request_encode_body
+    return self.urlopen(method, url, **extra_kw)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\poolmanager.py", line 375, in urlopen
+    response = conn.urlopen(method, u.request_uri, **kw)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\connectionpool.py", line 786, in urlopen
+    method, url, error=e, _pool=self, _stacktrace=sys.exc_info()[2]
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\util\retry.py", line 550, in increment
+    raise six.reraise(type(error), error, _stacktrace)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\packages\six.py", line 769, in reraise
+    raise value.with_traceback(tb)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\connectionpool.py", line 710, in urlopen
+    chunked=chunked,
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\connectionpool.py", line 449, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 3, in raise_from
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\site-packages\urllib3\connectionpool.py", line 444, in _make_request
+    httplib_response = conn.getresponse()
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\http\client.py", line 1331, in getresponse
+    response.begin()
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\http\client.py", line 297, in begin
+    version, status, reason = self._read_status()
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\http\client.py", line 258, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\socket.py", line 586, in readinto
+    return self._sock.recv_into(b)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\ssl.py", line 1009, in recv_into
+    return self.read(nbytes, buffer)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\ssl.py", line 871, in read
+    return self._sslobj.read(len, buffer)
+  File "C:\Users\ruf77\AppData\Local\Programs\Python\Python36\lib\ssl.py", line 631, in read
+    v = self._sslobj.read(len, buffer)
+urllib3.exceptions.ProtocolError: ('Connection aborted.', ConnectionResetError(10054, '현재 연결은 원격 호스트에 의해 강제로 끊겼습니다', None, 10054, None))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ruf77\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 497, in <module>
+    uehara.sendMessage(developer, f"{name}: {fl(customers,you)} blocked this bot")
+NameError: name 'fl' is not defined
+
+---------------------------
+
+시간: 2022-05-29-09:42:30
+
+Traceback (most recent call last):
+  File "C:\Users\qogks\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 502, in <module>
+    bot.sendMessage(you, data['users'][you]['totalSs'])
+  File "C:\Users\qogks\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\__init__.py", line 513, in sendMessage
+    return self._api_request('sendMessage', _rectify(p))
+  File "C:\Users\qogks\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\__init__.py", line 491, in _api_request
+    return api.request((self._token, method, params, files), **kwargs)
+  File "C:\Users\qogks\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\api.py", line 155, in request
+    return _parse(r)
+  File "C:\Users\qogks\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\api.py", line 150, in _parse
+    raise exception.TelegramError(description, error_code, data)
+telepot.exception.TelegramError: ('Bad Request: chat not found', 400, {'ok': False, 'error_code': 400, 'description': 'Bad Request: chat not found'})
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\qogks\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 505, in <module>
+    uehara.sendMessage(developer, f"{name}: {fl(customers,you)} blocked this bot")
+NameError: name 'fl' is not defined
+
+---------------------------
+
+시간: 2022-05-29-09:44:18
+
+Traceback (most recent call last):
+  File "C:\Users\qogks\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 508, in <module>
+    bot.sendMessage(you, data['users'][you]['totalSs'])
+  File "C:\Users\qogks\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\__init__.py", line 513, in sendMessage
+    return self._api_request('sendMessage', _rectify(p))
+  File "C:\Users\qogks\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\__init__.py", line 491, in _api_request
+    return api.request((self._token, method, params, files), **kwargs)
+  File "C:\Users\qogks\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\api.py", line 155, in request
+    return _parse(r)
+  File "C:\Users\qogks\AppData\Local\Programs\Python\Python36\lib\site-packages\telepot\api.py", line 150, in _parse
+    raise exception.TelegramError(description, error_code, data)
+telepot.exception.TelegramError: ('Bad Request: chat not found', 400, {'ok': False, 'error_code': 400, 'description': 'Bad Request: chat not found'})
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\qogks\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 511, in <module>
+    uehara.sendMessage(developer, f"{name}: {fl(customers,you)} blocked this bot")
+NameError: name 'customers' is not defined
+
+---------------------------
+
+시간: 2022-05-29-09:46:44
+
+Traceback (most recent call last):
+  File "C:\Users\qogks\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 520, in <module>
+    sys.exit()
+KeyboardInterrupt
+
+---------------------------
+
+시간: 2022-05-29-17:04:49
+
+Traceback (most recent call last):
+  File "C:\Users\qogks\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 521, in <module>
+KeyboardInterrupt
+
+---------------------------
+
+시간: 2022-05-29-17:05:00
+
+Traceback (most recent call last):
+  File "C:\Users\qogks\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 278, in getcoin
+    data['market']["base"][BTC]["bid"] = float(base[BTC][0])
+TypeError: float() argument must be a string or a number, not 'list'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\qogks\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 519, in <module>
+    getcoin()
+  File "C:\Users\qogks\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 293, in getcoin
+    data['market'] = last['market']
+KeyError: 'market'
+
+---------------------------
+
+시간: 2022-05-29-17:12:04
+
+Traceback (most recent call last):
+  File "C:\Users\qogks\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 280, in getcoin
+    data['market']["cost"] = (220*float(base["GST"][1]) + 10*float(base["GMT"])) * 1.06
+TypeError: float() argument must be a string or a number, not 'list'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\qogks\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 517, in <module>
+    getcoin()
+  File "C:\Users\qogks\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 291, in getcoin
+    data['market'] = last['market']
+KeyError: 'market'
+
+---------------------------
+
+시간: 2022-05-29-17:15:38
+
+Traceback (most recent call last):
+  File "C:\Users\qogks\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 526, in <module>
+    if data['market']['shoesPriceKRW'] < float(user_data['default']['price']):
+KeyError: 'shoesPriceKRW'
+
+---------------------------
+
+시간: 2022-05-29-18:07:17
+
+Traceback (most recent call last):
+  File "C:\Users\qogks\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 542, in <module>
+    elif data['market']["SOLGSTRatio"] > float(user_data['default']['ratioMax']:
+KeyboardInterrupt
+
+---------------------------
+
+시간: 2022-05-29-18:10:45
+
+Traceback (most recent call last):
+  File "C:\Users\qogks\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 538, in <module>
+    data['users'][you]['totalSs'] = printerG(you) + finalG(you)
+  File "C:\Users\qogks\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 327, in printerG
+    instantS += f"SOL/GST:{rat_col}"+"\n"
+NameError: name 'rat_col' is not defined
+
+---------------------------
+
+시간: 2022-05-29-18:13:11
+
+Traceback (most recent call last):
+  File "C:\Users\qogks\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 538, in <module>
+    data['users'][you]['totalSs'] = printerG(you) + finalG(you)
+  File "C:\Users\qogks\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 327, in printerG
+    instantS += f"SOL/GST:{fo2(data['market']['SOLGSTRatio'])}"+"\n"
+NameError: name 'rat_col' is not defined
+
+---------------------------
+
+시간: 2022-05-29-18:15:44
+
+Traceback (most recent call last):
+  File "C:\Users\qogks\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 565, in <module>
+    time.sleep(3)
+KeyboardInterrupt
+
+---------------------------
+
+시간: 2022-05-29-18:17:32
+
+Traceback (most recent call last):
+  File "C:\Users\qogks\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 565, in <module>
+    sys.exit()
+KeyboardInterrupt
+
+---------------------------
+
+시간: 2022-05-29-18:20:48
+
+Traceback (most recent call last):
+  File "C:\Users\qogks\OneDrive\Github\StepN-App-Price-Crawler\AppCrawl.py", line 566, in <module>
+    if revive:
+KeyboardInterrupt
+
+---------------------------
+
