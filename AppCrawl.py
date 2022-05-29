@@ -24,16 +24,34 @@ setting = {
     "dragLength" : 150,
     "dragDuration" : 0.2,
     "dragDelay" : 1.5,
-    "detectionMaxTry": 10
+    "detectionMaxTry": 10,
+    "saveImg" : (1350, 250, 250, 350)
 }
 
 if os.path.exists("./data/data.txt"):
     #print("File already existing. Loading...")
     with open("./data/data.txt", 'r') as fil:
-        setting = json.load(fil)
+        totalSet = json.load(fil)
+        if socket.gethostname() in totalSet.keys():
+            setting = totalSet[socket.gethostname()]
+            print("personalized")
+        else:
+            setting = totalSet['default']
+            print("default")
+else:
+    print("default")
 
 setting["coordPrice"] = tuple(setting["coordPrice"])
 setting["refreshPoint"] = tuple(setting["refreshPoint"])
+setting["saveImg"] = tuple(setting["saveImg"])
+
+customers= {'709146795': '나', '518298248': '한기루상', '1545297996': '형주형', '1437691939': '진원이형', '1036250967': '시티사장님', '1054539954': '사장님2', '865929250': '이세직집사님', '720960187': '광태형', '1650075850': '최이사님', '1673479631': '종호형', '1328593892': '배상윤대표님', '1450647722': '최이사님 조카분', "1744957536":'서혁진님'}
+
+def fl(lis, key):
+    if key in lis:
+        return lis[key]
+    else:
+        return key
 
 def replaceAll(s, lis):
     for l in lis:
@@ -125,6 +143,7 @@ helps_D={"refresh_code":"",
 
 name="StepN"
 mkIfNone("./dataxl")
+mkIfNone("./img")
 
 wb = Workbook()
 ws1 = wb.active
@@ -257,7 +276,7 @@ def getcoin(BTC):
         data['market'] = last['market']
 
 def printer(BTC, you='default'):
-    priceColor = colored(fo2(data['market']["shoesPriceKRW"]), 'green' if data['market']["shoesPriceKRW"] < float(user_data[you]['price']) else 'red')
+    priceColor = "    " + colored(fo2(data['market']["shoesPriceKRW"]), 'green' if data['market']["shoesPriceKRW"] < float(user_data[you]['price']) else 'red')
     
     print(f"StepN 최저가:  {data['market']['shoesPrice']} SOL")
     print(f"{BTC} UP가:  {fo(data['market']['base']['bid'])} {fo2(data['market']['base']['ask'])}")
@@ -484,7 +503,8 @@ try:
             for you in us+[default]:
                 data['users'][you]['totalSs'] = printerG("SOL", you) + finalG(you)
             if data['market']['shoesPriceKRW'] < float(user_data['default']['price']):
-                winsound.PlaySound("./data/김프의노래.wav", winsound.SND_ALIAS)
+                pass
+                #winsound.PlaySound("./data/김프의노래.wav", winsound.SND_ALIAS)
             for you in us:
                 try:
                     if data['market']['shoesPriceKRW'] < float(user_data[you]['price']):
@@ -493,7 +513,9 @@ try:
                     if recentBanDate[you] != time.strftime('%Y-%m-%d'):
                         uehara.sendMessage(developer, f"{name}: {fl(customers,you)} blocked this bot")
                         recentBanDate[you] = time.strftime('%Y-%m-%d')
-            now=time.strftime("%M")    
+            now=time.strftime("%M")
+            #screenshot = pyautogui.screenshot(region = setting['saveImg'])
+            #screenshot.save("./img/"+time.strftime('%Y%m%d-%H%M')+".png")
         if revive:
             sys.exit()
         time.sleep(3)
