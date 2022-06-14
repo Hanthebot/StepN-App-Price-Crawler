@@ -18,14 +18,15 @@ from openpyxl import Workbook
 pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
 
 setting = {
-    "coordPrice" : [1365, 548, 140, 20],
+    "coordPrice_C" : [0.0631, 0.5390, 0.2523, 0.0203],
     "retryDelay" : 0.25,
-    "refreshPoint" : (1600, 275),
-    "dragLength" : 150,
+    "refreshPoint_C" : [0.4865, 0.2604],
+    "dragLength_C" : 0.1478,
     "dragDuration" : 0.2,
-    "dragDelay" : 1.5,
+    "dragDelay" : 2,
     "detectionMaxTry": 10,
-    "saveImg" : (1350, 250, 250, 350)
+    "saveImg_C" : [0.0541, 0.2401, 0.4505, 0.3445],
+    "dimension" : [1315, 33, 555, 987]
 }
 
 if os.path.exists("./data/data.txt"):
@@ -41,11 +42,19 @@ if os.path.exists("./data/data.txt"):
 else:
     print("default")
 
-setting["coordPrice"] = tuple(setting["coordPrice"])
-setting["refreshPoint"] = tuple(setting["refreshPoint"])
-setting["saveImg"] = tuple(setting["saveImg"])
+if "place" in setting:
+    try:
+        cmdXi, cmdYi, cmdX, cmdY = setting["place"]
+        os.system(f"cmdow @ /MOV {cmdXi} {cmdYi} /SIZ {cmdX} {cmdY}")
+    except:
+        pass
 
-customers= {'709146795': '나', '518298248': '한기루상', '1545297996': '형주형', '1437691939': '진원이형', '1036250967': '시티사장님', '1054539954': '사장님2', '865929250': '이세직집사님', '720960187': '광태형', '1650075850': '최이사님', '1673479631': '종호형', '1328593892': '배상윤대표님', '1450647722': '최이사님 조카분', "1744957536":'서혁진님'}
+xi, yi, x, y = setting["dimension"]
+setting["dimension"] = tuple(setting["dimension"])
+setting["coordPrice"] = (int(xi + setting["coordPrice_C"][0] * x), int(yi + setting["coordPrice_C"][1] * y), int(setting["coordPrice_C"][2] * x), int(setting["coordPrice_C"][3] * y))
+setting["refreshPoint"] = (int(xi + setting["refreshPoint_C"][0] * x), int(yi + setting["refreshPoint_C"][1] * y))
+setting["dragLength"] = int(setting["dragLength_C"] * y)
+setting["saveImg"] = (int(xi + setting["saveImg_C"][0] * x), int(yi + setting["saveImg_C"][1] * y), int(setting["saveImg_C"][2] * x), int(setting["saveImg_C"][3] * y))
 
 def fl(lis, key):
     if key in lis:
@@ -57,6 +66,9 @@ def replaceAll(s, lis):
     for l in lis:
         s = s.replace(l,'')
     return s
+
+def onlyNumber(s, target = "0123456789."):
+    return "".join([l for l in s if l in target])
 
 def isNumber(s):
     try:
@@ -71,7 +83,7 @@ def scanSection(cord, showImage = False):
     if showImage:
         imageFiltered.show()
     stringified = pytesseract.image_to_string(imageFiltered, lang=None)
-    return stringified
+    return (stringified, imageFiltered)
 
 def read_screen(coordinate, maxTry = setting["detectionMaxTry"]):
     lis = []
@@ -79,14 +91,16 @@ def read_screen(coordinate, maxTry = setting["detectionMaxTry"]):
     
     while score < maxTry and len(lis) == 0:
         time.sleep(setting['retryDelay'])
-        scanned = scanSection(coordinate).split(" ")[0]
+        scanned, img = scanSection(coordinate)
+        scanned = scanned.split(" ")[0]
         #print(scanned)
-        filtered = replaceAll(scanned,['\x0c',',','\n','S','O','L'])
+        filtered = onlyNumber(scanned)
         filteredP = filtered.replace(".","")
         if isNumber(filtered) or isNumber(filteredP):
             numerified = float(filtered) if isNumber(filtered) else float(filteredP)
             lis.append(numerified)
             break
+        img.save("./img/Error_"+time.strftime('%Y%m%d_%H%M-')+str(score)+"_as_"+scanned.replace(".", "-")+".png")
         score += 1
         
     if len(lis) == 0:
@@ -98,8 +112,10 @@ def checkCoin():
     return replaceAll(scanSection(symbol),['\x0c',',','\n'])
 
 def refresh(coor1 = setting["refreshPoint"], drag = setting["dragLength"], duration = setting["dragDelay"]):
+    pos = pyautogui.position()
     pyautogui.moveTo(coor1)
     pyautogui.dragTo(coor1[0], coor1[1]+drag, setting["dragDuration"], button='left')
+    pyautogui.moveTo(pos)
     time.sleep(duration)
 
 def stepNPrice(coordinate = setting["coordPrice"]):
@@ -143,7 +159,8 @@ helps_D={"refresh_code":"",
     "mind":"SOL/GST 비율 알림 체크/업데이트 \n예: mind/mind 27.0",
     "die":"",
     "helpd":"",
-    "usaged":""}
+    "usaged":"",
+    "screenshot":"스크린샷 전송. \n예: screenshot OR screenshot 130 400 100 100"}
 
 name="StepN"
 mkIfNone("./dataxl")
@@ -170,20 +187,27 @@ mkIfNone("./data")
 mkIfNone("./log")
 owner = ["709146795", "518298248"]
 developer = "709146795"
-if not os.path.exists("./data/StepNids.txt"):
-    with open("./data/StepNids.txt",'w') as m:
-        m.write("\n".join(["709146795", "518298248"]))
-        m.close()
-
+    
+us = []
+if not os.path.exists("./data/StepNidData.txt"):
+    with open("./data/StepNids.txt",'w') as i:
+        i.write(""))
 with open("./data/StepNids.txt",'r') as i:
     us = [ID.split("#")[0].replace(' ','') for ID in i.read().split("\n")]
-
-if not os.path.exists("./data/StepNwhite.txt"):
-    with open("./data/StepNwhite.txt",'w') as m:
-        m.write("\n".join(["518298248","720960187","1673479631","1328593892","1744957536","1545297996"]))
         
+whitelist = []
+if not os.path.exists("./data/StepNwhite.txt"):
+    with open("./data/StepNwhite.txt",'w') as i:
+        i.write(""))
 with open("./data/StepNwhite.txt",'r') as i:
     whitelist = [idd.split("#")[0].replace(' ','') for idd in i.read().split("\n")]
+
+customers = {}
+if not os.path.exists("./data/customerName.txt"):
+    with open("./data/customerName.txt",'w') as i:
+        i.write("{}"))
+with open("./data/customerName.txt",'r') as i:
+    customers = json.load(i.read())
 
 defaultD = {"default": {
             'percentage': 0.0,
@@ -283,7 +307,7 @@ def getcoin():
             data['market']["base"][BTC]["ask"] = float(base[BTC][1])
         data['market']["shoesPrice"] = shoesPrice
         data['market']["shoesPriceUSD"] = float(base["SOL"][0])*shoesPrice
-        data['market']["cost"] = (220*float(base["GST"][1]) + 10*float(base["GMT"][1])) * 1.06
+        data['market']["cost"] = (360*float(base["GST"][1]) + 40*float(base["GMT"][1])) * 1.06
         data['market']["premium"] = (data['market']["shoesPriceUSD"] / data['market']["cost"] - 1) * 100
         data['market']["SOLGSTRatio"] = float(base["SOL"][0]) / float(base["GST"][1])
         ws1.cell(ws1.max_row, 1, shoesPrice)
@@ -412,6 +436,22 @@ def handle(msg):
                                     m.write("\n".join(whitelist))
                                     m.close()
                                     bot.sendMessage(chat_id, f"{content} added")
+                
+                            elif command.lower()=="screenshot":
+                                contents = msg['text'].split(" ")
+                                dimension = setting["dimension"]
+                                try:
+                                    if len(contents) >= 5:
+                                        dimension = tuple([int(c) for c in contents[1:5]])
+                                except:
+                                    pass
+                                bot.sendMessage(chat_id, "Processing...")
+                                img = pyautogui.screenshot(region = dimension)
+                                img_name = "SC_" + time.strftime('%Y%m%d%H%M%S') + ".png"
+                                img.save("./img/" + img_name)
+                                bot.sendPhoto(chat_id, open("./img/" + img_name, "rb"))
+                                os.remove("./img/" + img_name)
+                
                             else:
                                 bot.sendMessage(chat_id, "None")
                     else:
@@ -422,6 +462,7 @@ def handle(msg):
                         bot.sendMessage(chat_id, f"{content}: {helps[content]}")
                     else:
                         bot.sendMessage(chat_id, "\n".join([f"{com}:{helps[com]}" for com in helps]))
+                
                 else:
                     bot.sendMessage(chat_id, f"Message not acceptable")
             #출력
@@ -493,6 +534,13 @@ def handle(msg):
                             bot.sendMessage(chat_id, "command list: "+", ".join(list(helps_D.keys())))
                         elif command.lower()=="usaged":
                             bot.sendMessage(chat_id, "\n".join([f"{com}:{helps_D[com]}" for com in helps_D]))
+                        elif command.lower()=="screenshot":
+                            bot.sendMessage(chat_id, "Processing...")
+                            img = pyautogui.screenshot(region = setting["dimension"])
+                            img_name = "S_" + time.strftime('%Y%m%d%H%M%S') + ".png"
+                            img.save("./img/" + img_name)
+                            bot.sendPhoto(chat_id, open("./img/" + img_name, "rb"))
+                            os.remove("./img/" + img_name)
                         else:
                             bot.sendMessage(chat_id, "None, command list: "+", ".join(list(helps_D.keys())))
                     else:
@@ -552,9 +600,9 @@ try:
                 try:
                     if data['market']['premium'] > user_data[you]['percentage']:
                         bot.sendMessage(you, data['users'][you]['totalSs'])
-                    if data['market']['SOLGSTRatio'] > user_data[you]['ratioMax']:
+                    elif data['market']['SOLGSTRatio'] > user_data[you]['ratioMax']:
                         bot.sendMessage(you, data['users'][you]['totalSs'])
-                    if data['market']['SOLGSTRatio'] < user_data[you]['ratioMin']:
+                    elif data['market']['SOLGSTRatio'] < user_data[you]['ratioMin']:
                         bot.sendMessage(you, data['users'][you]['totalSs'])
                 except:
                     if recentBanDate[you] != time.strftime('%Y-%m-%d'):
