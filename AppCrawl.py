@@ -189,25 +189,25 @@ owner = ["709146795", "518298248"]
 developer = "709146795"
     
 us = []
-if not os.path.exists("./data/StepNidData.txt"):
+if not os.path.exists("./data/StepNids.txt"):
     with open("./data/StepNids.txt",'w') as i:
-        i.write(""))
+        i.write("")
 with open("./data/StepNids.txt",'r') as i:
     us = [ID.split("#")[0].replace(' ','') for ID in i.read().split("\n")]
         
 whitelist = []
 if not os.path.exists("./data/StepNwhite.txt"):
     with open("./data/StepNwhite.txt",'w') as i:
-        i.write(""))
+        i.write("")
 with open("./data/StepNwhite.txt",'r') as i:
     whitelist = [idd.split("#")[0].replace(' ','') for idd in i.read().split("\n")]
 
 customers = {}
 if not os.path.exists("./data/customerName.txt"):
     with open("./data/customerName.txt",'w') as i:
-        i.write("{}"))
-with open("./data/customerName.txt",'r') as i:
-    customers = json.load(i.read())
+        i.write("{}")
+with open("./data/customerName.txt",'r', encoding = "utf-8") as i:
+    customers = json.load(i)
 
 defaultD = {"default": {
             'percentage': 0.0,
@@ -518,7 +518,7 @@ def handle(msg):
                         elif command.lower()=="code":
                             bot.sendMessage(chat_id,invitation)
                         elif command.lower()=="us":
-                            bot.sendMessage(chat_id,"\n".join(us))
+                            bot.sendMessage(chat_id,"\n".join([fl(customers,you) for you in us]))
                         elif command.lower()=="white":
                             bot.sendMessage(chat_id,"\n".join(whitelist))
                         elif command.lower()=="revive":
