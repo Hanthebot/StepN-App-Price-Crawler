@@ -1,0 +1,25 @@
+{
+    "developer": "{DEVELOPER_TELEGRAM_ID}",
+    "admin": [
+        "{ADMIN_1_TELEGRAM_ID}",
+        "{ADMIN_2_TELEGRAM_ID}"
+    ],
+    "bot_token": "{TELEGRAM_BOT_TOKEN}",
+    "bot_id": "{TELEGRAM_BOT_ID}",
+    "alert_bot_token": "{TELEGRAM_BOT_TOKEN}",
+    "subscribers": [
+        "{TELEGRAM_ID_1}",
+        "{TELEGRAM_ID_2}"
+    ],
+    "invitation_code": "{AUTOMATICALLY_ENTERED}",
+    "whitelist": [
+        "{TELEGRAM_ID}",
+        "{TELEGRAM_ID}"
+    ],
+    "subscriber_name_dict": {
+        "{TELEGRAM_ID}": "{NICKNAME}",
+    },
+    "server_list": {
+        "{DESKTOP_HOSTNAME}": "{DESKTOP_NAME}"
+    }
+}
