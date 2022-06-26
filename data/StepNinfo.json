@@ -1,5 +1,6 @@
 {
     "developer": "{DEVELOPER_TELEGRAM_ID}",
+    "developer_id": "{DEVELOPER_TELEGRAM_LETTER_ID}",
     "admin": [
         "{ADMIN_1_TELEGRAM_ID}",
         "{ADMIN_2_TELEGRAM_ID}"
