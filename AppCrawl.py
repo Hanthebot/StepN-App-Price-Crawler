@@ -29,13 +29,13 @@ setting = {
     "dimension" : [1315, 33, 555, 987]
 }
 
-if os.path.exists("./data/data.txt"):
-    #print("File already existing. Loading...")
-    with open("./data/data.txt", 'r') as fil:
+print("setting...", end = "")
+if os.path.exists("./data/data.json"):
+    with open("./data/data.json", 'r') as fil:
         totalSet = json.load(fil)
         if socket.gethostname() in totalSet.keys():
             setting = totalSet[socket.gethostname()]
-            print("personalized")
+            print("found")
         else:
             setting = totalSet['default']
             print("default")
@@ -55,6 +55,30 @@ setting["coordPrice"] = (int(xi + setting["coordPrice_C"][0] * x), int(yi + sett
 setting["refreshPoint"] = (int(xi + setting["refreshPoint_C"][0] * x), int(yi + setting["refreshPoint_C"][1] * y))
 setting["dragLength"] = int(setting["dragLength_C"] * y)
 setting["saveImg"] = (int(xi + setting["saveImg_C"][0] * x), int(yi + setting["saveImg_C"][1] * y), int(setting["saveImg_C"][2] * x), int(setting["saveImg_C"][3] * y))
+
+info = {
+    "developer": "",
+    "admin": [],
+    "bot_token": "",
+    "bot_id": "",
+    "alert_bot_token": "",
+    "subscribers": [],
+    "invitation_code": "",
+    "whitelist": [],
+    "subscriber_name_dict": {},
+    "server_list": {}
+}
+
+print("ID information...", end = "")
+if os.path.exists("./data/StepNinfo.json"):
+    with open("./data/StepNinfo.json", 'r', encoding = "utf-8") as fil:
+        try:
+            info = json.load(fil)
+            print("found")
+        except:
+            print("default")
+else:
+    print("default")
 
 def fl(lis, key):
     if key in lis:
@@ -123,8 +147,6 @@ def stepNPrice(coordinate = setting["coordPrice"]):
     returned = read_screen(coordinate)
     return float(returned[0]) if returned != None else 10^8
 
-version="May28"
-
 def mkIfNone(path):
     if not os.path.exists(path):
         if path.replace("\\","/").split("/")[-1].replace(".","")!=path.replace("\\","/").split("/")[-1]:
@@ -133,6 +155,34 @@ def mkIfNone(path):
             os.makedirs(path)
         except:
             pass
+
+def number(s):
+    try:
+        float(s)
+        return True
+    except:
+        return False
+
+def replaceAll(s, lis):
+    for l in lis:
+        s=s.replace(l,'')
+    return s
+
+def inOrNot(dic, key):
+    if key in dic:
+        return dic[key]
+    else:
+        return key
+
+def saveData():
+    with open("./data/StepNuserData.json", "w") as m:
+        json.dump(user_data, m, indent = 4)
+
+def saveInfo():
+    with open("./data/StepNinfo.json", "w", encoding = "utf-8") as m:
+        json.dump(info, m, indent = 4, ensure_ascii=False)
+
+version="May28"
 
 helps = {"퍼센트":"최저가 알림 체크/업데이트 \n예: 퍼센트/퍼센트 1.0",
          "max":"SOL/GST 비율 알림 체크/업데이트 \n예: max/max 27.0",
@@ -146,6 +196,7 @@ helps = {"퍼센트":"최저가 알림 체크/업데이트 \n예: 퍼센트/퍼�
          "server":"returns server name",
          "help":"message list",
          "usage":"returns usage \n 예:usage/usage [command]"}
+
 helps_D={"refresh_code":"",
     "code":"",
     "execute":"",
@@ -171,64 +222,39 @@ ws1 = wb.active
 start = time.strftime('%Y%m%d%H%M%S')
 die = False
 revive = False
-link = 'hantheUltrabot'
-Token = "1657206661:AAFero4uNhPawrLQcVtHjgyrOa-LrikxIQA"
 trr=""
 now="l"
 default='default'
 
-bot =telepot.Bot(Token)
+bot = telepot.Bot(info["bot_token"])
 
-ueharaT = "1500311505:AAEIc6gKWzhBswe-KwIfI6kXVaxtO2cdVfk"
-uehara =telepot.Bot(ueharaT)
+alert_bot = telepot.Bot(info["alert_bot_token"])
 coinlis = ["SOL", "GST", "GMT"]
 
 mkIfNone("./data")
 mkIfNone("./log")
-owner = ["709146795", "518298248"]
-developer = "709146795"
-    
-us = []
-if not os.path.exists("./data/StepNids.txt"):
-    with open("./data/StepNids.txt",'w') as i:
-        i.write("")
-with open("./data/StepNids.txt",'r') as i:
-    us = [ID.split("#")[0].replace(' ','') for ID in i.read().split("\n")]
-        
-whitelist = []
-if not os.path.exists("./data/StepNwhite.txt"):
-    with open("./data/StepNwhite.txt",'w') as i:
-        i.write("")
-with open("./data/StepNwhite.txt",'r') as i:
-    whitelist = [idd.split("#")[0].replace(' ','') for idd in i.read().split("\n")]
 
-customers = {}
-if not os.path.exists("./data/customerName.txt"):
-    with open("./data/customerName.txt",'w') as i:
-        i.write("{}")
-with open("./data/customerName.txt",'r', encoding = "utf-8") as i:
-    customers = json.load(i)
-
-defaultD = {"default": {
+global user_data
+user_data = {"default": {
             'percentage': 0.0,
             'ratioMax': 28,
             'ratioMin': 26
             }
          }
-global user_data
-try:
-    with open("./data/StepNdata.txt",'r') as m:
-        user_data=eval(m.read())
-except:
-    try:
-        bot.sendMessage(developer,"ERROR")
-    except:
-        pass
-    with open("./data/StepNdata.txt",'w') as m:
-        m.write(str(defaultD).replace("]}, '","]}, \n'"))
-    user_data = defaultD
 
-for you in us:
+print("user data...", end = "")
+if os.path.exists("./data/StepNuserData.json"):
+    with open("./data/StepNuserData.json",'r') as m:
+        try:
+            user_data = json.load(m)
+            print("found")
+        except:
+            bot.sendMessage(info["developer"], "ERROR")
+            print("default")
+else:
+    print("default")
+
+for you in info["subscribers"]:
     if you not in list(user_data.keys()):
         user_data[you] = user_data['default']
         try:
@@ -237,18 +263,14 @@ for you in us:
             pass
 
 curB = ""
-string_pool = string.digits #string.ascii_letters+
-global invitation
-invitation = ""
+string_pool = string.digits 
+info["invitation_code"] = ""
 for i in range(7):
-    invitation += random.choice(string_pool)
+    info["invitation_code"] += random.choice(string_pool)
 
-with open("./data/StepNinvitation.txt",'w') as i:
-    i.write(invitation)
+saveInfo()
 
 colorama.init()
-
-servers = {"DESKTOP-3MLFMEP":"컴퓨터", "DESKTOP-FEHJQDU":"노트북"}
 
 def upbit(BTC="BTC", cur="KRW"):
     htm = requests.get("https://api.upbit.com/v1/orderbook?markets="+cur+"-"+BTC, headers = {"User-Agent": "Mozilla/5.0"})
@@ -356,35 +378,9 @@ def printerG(you='default'):
     return instantS
 
 
-def finalG(you='default'):
+def finalG(you = 'default'):
     instantS = "현재 시각: "+time.strftime('%Y-%m-%d-%H:%M:%S')+"\n"
     return instantS
-
-def number(s):
-    try:
-        float(s)
-        return True
-    except:
-        return False
-
-def replaceAll(s, lis):
-    for l in lis:
-        s=s.replace(l,'')
-    return s
-
-def inOrNot(dic, key):
-    if key in dic:
-        return dic[key]
-    else:
-        return key
-
-def saveFile():
-    with open("./data/StepNdata.txt", "w") as m:
-        m.write(str(user_data).replace("]}, '","]}, \n'"))
-
-def saveFileIds():
-    with open("./data/StepNids.txt", "w") as m:
-        m.write("\n".join(us))
     
 def dataFormat(jso):
     try:
@@ -399,21 +395,21 @@ total_coinlist = []
 data = {}
 last = {}
 data['users'] = {}
-for you in us+['default']:
+for you in info["subscribers"] + ["default"]:
     data['users'][you] = {}
 
-recentBanDate = {you:'0' for you in us}
+recentBanDate = {you:'0' for you in info["subscribers"]}
 
 def handle(msg):
     global die
     global revive
     global user_data
-    global invitation
+    global info
     content_type, chat_type, chat_id = telepot.glance(msg)
     chat_id=str(chat_id)
     if content_type == 'text':
         command = msg['text'].split(" ")[0]
-        if chat_id in us:
+        if chat_id in info["subscribers"]:
             if len(msg['text'].split(" "))>1:
                 content = msg['text'].split(" ")[1].replace("\n","")
                 if number(content):
@@ -423,18 +419,16 @@ def handle(msg):
                         bot.sendMessage(chat_id, f"{command}->{content}")
                     
                     elif command.lower() in list(helps_D.keys()):
-                        if chat_id in owner:
+                        if chat_id in info["admin"]:
                             if command in ["퍼센트d", "maxd", "mind"]:
                                 user_data['default'][['percentage', 'ratioMax', 'ratioMin'][["퍼센트d", "maxd", "mind"].index(command)]] = float(content)
                                 saveFile()
                                 bot.sendMessage(chat_id, f"{command}->{content}")
                                 
                             elif command in ["white_add", "whitelist"]:
-                                if content not in whitelist:
-                                    whitelist.append(content)
-                                    m=open("./data/StepNwhite.txt",'w')
-                                    m.write("\n".join(whitelist))
-                                    m.close()
+                                if content not in info["whitelist"]:
+                                    info["whitelist"].append(content)
+                                    saveInfo()
                                     bot.sendMessage(chat_id, f"{content} added")
                 
                             elif command.lower()=="screenshot":
@@ -487,21 +481,20 @@ def handle(msg):
                     instant+=finalG('default')
                     bot.sendMessage(chat_id, instant)
                 elif command in ['링크','초대','초대링크']:
-                    bot.sendMessage(chat_id, 't.me/'+link)
+                    bot.sendMessage(chat_id, 't.me/'+info["bot_id"])
                 elif command.lower()=="help":
                         bot.sendMessage(chat_id, "command list: "+", ".join(list(helps.keys())))
                 elif command.lower()=="usage":
                     bot.sendMessage(chat_id, "\n".join([f"{com}:{helps[com]}" for com in helps]))
                 elif command=="server":
-                    bot.sendMessage(chat_id, inOrNot(servers, socket.gethostname()))
+                    bot.sendMessage(chat_id, inOrNot(info["server_list"], socket.gethostname()))
                 elif command.lower() in list(helps_D.keys()):
-                    if chat_id in owner:
+                    if chat_id in info["admin"]:
                         if command.lower()=="refresh_code":                        
-                            invitation=""
+                            info["invitation_code"] = ""
                             for i in range(7):
-                                invitation += random.choice(string_pool)
-                            with open("./data/StepNinvitation.txt",'w') as i:
-                                i.write(invitation)
+                                info["invitation_code"] += random.choice(string_pool)
+                            saveInfo()
                         elif command.lower()=="whole_data":
                             whole_lis=[i+"\n"+dataFormat(user_data[i]) for i in user_data.keys()]
                             try:
@@ -516,11 +509,11 @@ def handle(msg):
                                 for x in range(int(len(str(user_data).replace("]}, '","]}, \n'"))/4095)+1):
                                     bot.sendMessage(chat_id,str(user_data).replace("]}, '","]}, \n'")[x*4095:(x+1)*4095])
                         elif command.lower()=="code":
-                            bot.sendMessage(chat_id,invitation)
+                            bot.sendMessage(chat_id, info["invitation_code"])
                         elif command.lower()=="us":
-                            bot.sendMessage(chat_id,"\n".join([fl(customers,you) for you in us]))
+                            bot.sendMessage(chat_id,"\n".join([fl(info["subscriber_name_dict"], you) for you in info["subscribers"]]))
                         elif command.lower()=="white":
-                            bot.sendMessage(chat_id,"\n".join(whitelist))
+                            bot.sendMessage(chat_id,"\n".join(info["whitelist"]))
                         elif command.lower()=="revive":
                             bot.sendMessage(chat_id,"See you soon")
                             revive=True
@@ -547,31 +540,27 @@ def handle(msg):
                         bot.sendMessage(chat_id, "Forbidden access")
                 else:
                     bot.sendMessage(chat_id, "명령어 리스트: "+", ".join(list(helps.keys()))+"\n값 입력은 뒤에 숫자를 넣는다\nex) 환율 40")
-        elif chat_id in whitelist:
-            us.append(chat_id)
-            with open("./data/StepNids.txt",'w') as m:
-                m.write("\n".join(us))
+        elif chat_id in info["whitelist"]:
+            info["subscribers"].append(chat_id)
+            saveInfo()
             user_data[chat_id]=user_data['default']
             recentBanDate[chat_id]='0'
             bot.sendMessage(chat_id, "Welcome")
-            uehara.sendMessage(developer, f"{name}: {chat_id} was added")   
+            alert_bot.sendMessage(info["developer"], f"{name}: {chat_id} was added")   
         else:
-            if command==invitation:
-                us.append(chat_id)
-                with open("./data/StepNids.txt",'w') as m:
-                    m.write("\n".join(us))
+            if command == info["invitation_code"]:
+                info["subscribers"].append(chat_id)
                 user_data[chat_id]=user_data['default']
                 recentBanDate[chat_id]='0'
                 bot.sendMessage(chat_id, "Welcome")
-                uehara.sendMessage(developer, f"{chat_id} was added")          
-                invitation=""
+                alert_bot.sendMessage(info["developer"], f"{chat_id} was added")          
+                info["invitation_code"]=""
                 for i in range(7):
-                    invitation += random.choice(string_pool)
-                with open("./data/StepNinvitation.txt",'w') as i:
-                    i.write(invitation)
+                    info["invitation_code"] += random.choice(string_pool)
+                saveInfo()
             else:
                 bot.sendMessage(chat_id, "Unknown access. Contact developer t.me/haninthai for the key")
-                bot.sendMessage(developer, f"{chat_id} tried to access: {msg['text']}")
+                bot.sendMessage(info["developer"], f"{chat_id} tried to access: {msg['text']}")
 
 bot.message_loop(handle)
 try:
@@ -585,7 +574,7 @@ try:
             printer()
             final()
             
-            for you in us+[default]:
+            for you in info["subscribers"] + ["default"]:
                 data['users'][you]['totalSs'] = printerG(you) + finalG(you)
             if data['market']['premium'] > user_data['default']['percentage']:
                 pass
@@ -596,7 +585,7 @@ try:
             elif data['market']["SOLGSTRatio"] < user_data['default']['ratioMin']:
                 pass
                 #winsound.PlaySound("./data/김프의노래.wav", winsound.SND_ALIAS)
-            for you in us:
+            for you in info["subscribers"]:
                 try:
                     if data['market']['premium'] > user_data[you]['percentage']:
                         bot.sendMessage(you, data['users'][you]['totalSs'])
@@ -606,7 +595,7 @@ try:
                         bot.sendMessage(you, data['users'][you]['totalSs'])
                 except:
                     if recentBanDate[you] != time.strftime('%Y-%m-%d'):
-                        uehara.sendMessage(developer, f"{name}: {fl(customers,you)} blocked this bot")
+                        alert_bot.sendMessage(info["developer"], f"{name}: {fl(info['subscriber_name_dict'], you)} blocked this bot")
                         recentBanDate[you] = time.strftime('%Y-%m-%d')
             now=time.strftime("%M")
             #screenshot = pyautogui.screenshot(region = setting['saveImg'])
