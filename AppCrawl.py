@@ -1,8 +1,6 @@
 import json
 import os
-import random
 import socket
-import string
 import sys
 import time
 import traceback
@@ -18,6 +16,8 @@ import pytesseract
 import requests
 import telepot
 from termcolor import colored
+
+from util import fl, fo2, fo3, fo4, mkIfNone, number, onlyNumber, randString
 
 pytesseract.pytesseract.tesseract_cmd = r"C:/Program Files/Tesseract-OCR/tesseract.exe"
 
@@ -68,7 +68,6 @@ info = {
     "bot_id": "",
     "alert_bot_token": "",
     "subscribers": [],
-    "invitation_code": "",
     "whitelist": [],
     "subscriber_name_dict": {},
     "server_list": {}
@@ -117,18 +116,86 @@ for you in info["subscribers"]:
         except telepot.exception.TelepotException:
             pass
 
-def fl(lis, key):
-    if key in lis:
-        return lis[key]
-    return key
+def saveFile():
+    with open("./data/StepNuserData.json", "w", encoding = "utf-8") as fil:
+        json.dump(user_data, fil, indent = 4)
 
-def replaceAll(s, lis):
-    for l in lis:
-        s = s.replace(l,"")
-    return s
+def saveInfo():
+    with open("./data/StepNinfo.json", "w", encoding = "utf-8") as fil:
+        json.dump(info, fil, indent = 4, ensure_ascii = False)
 
-def onlyNumber(s, target = "0123456789."):
-    return "".join([l for l in s if l in target])
+manifest = {
+    "name": "StepN",
+    "version": "Jun27",
+    "curB": "",
+    "commands": {
+        "퍼센트": "최저가 알림 체크/업데이트 \n예: 퍼센트/퍼센트 1.0",
+        "max": "SOL/GST 비율 알림 체크/업데이트 \n예: max/max 27.0",
+        "min": "SOL/GST 비율 알림 체크/업데이트 \n예: min/min 27.0",
+        "데이터": "프로그램용 내부 크롤링 데이터 출력 \n예: 데이터",
+        "유저데이터": "유저 개인 설정 \n예: 데이터",
+        "기본데이터": "유저 개인 설정 \n예: 데이터",
+        "기본프린트": "프로그램용 출력 \n예: 기본프린트",
+        "프린트": "프로그램용 출력 \n예: 프린트",
+        "초대/링크/초대링크": "프로그램 공유용 링크",
+        "server": "returns server name",
+        "help": "message list",
+        "usage": "returns usage \n 예:usage/usage [command]"
+    },
+    "commands_admin": {
+        "refresh_code": "",
+        "code": "",
+        "execute": "",
+        "kill_execute": "",
+        "us": "",
+        "whole_data": "",
+        "naked_data": "",
+        "revive": "",
+        "퍼센트d": "최저가 알림 체크/업데이트 \n예: 퍼센트d/퍼센트d 1.0",
+        "maxd": "SOL/GST 비율 알림 체크/업데이트 \n예: maxd/maxd 27.0",
+        "mind": "SOL/GST 비율 알림 체크/업데이트 \n예: mind/mind 27.0",
+        "die": "",
+        "helpd": "",
+        "usaged": "",
+        "screenshot": "스크린샷 전송. \n예: screenshot OR screenshot 130 400 100 100"
+    }
+}
+
+data = {
+    "market": {},
+    "prev_market": {},
+    "users": {you: {} for you in info["subscribers"] + ["default"]},
+    "start": time.strftime("%Y%m%d%H%M%S"),
+    "die": False,
+    "revive": False,
+    "error": "None",
+    "invitation_code": "",
+    "execute_on": time.time(),
+    "coinlist": ["SOL", "GST", "GMT"],
+    "recent_ban_date": {you: "0" for you in info["subscribers"]}
+}
+
+data["invitation_code"] = randString(7)
+
+mkIfNone("./dataxl")
+mkIfNone("./img")
+mkIfNone("./data")
+mkIfNone("./log")
+wb = Workbook()
+ws1 = wb.active
+colorama.init()
+
+def upbit(BTC = "BTC", cur = "KRW"):
+    htm = requests.get(f"https://api.upbit.com/v1/orderbook?markets={cur}-{BTC}", headers = {"User-Agent": "Mozilla/5.0"})
+    hack = htm.json()
+    
+    return [hack[0]["orderbook_units"][0]["bid_price"], hack[0]["orderbook_units"][0]["ask_price"], hack[0]["orderbook_units"][0]["bid_size"], hack[0]["orderbook_units"][0]["ask_size"]]
+
+def ftx(BTC = "BTC", cur = "USD"):
+    htm = requests.get(f"https://ftx.com/api/markets/{BTC}/{cur}/orderbook", headers = {"User-Agent": "Mozilla/5.0"})
+    hack = htm.json()
+    
+    return [hack["result"]["bids"][0][0], hack["result"]["asks"][0][0], hack["result"]["bids"][0][1], hack["result"]["asks"][0][1]]
 
 def scanSection(cord, showImage = False):
     img = pyautogui.screenshot(region=cord)
@@ -171,149 +238,26 @@ def stepNPrice(coordinate = setting["coordPrice"]):
     returned = read_screen(coordinate)
     return float(returned[0]) if returned != None else 10^8
 
-def mkIfNone(path):
-    if not os.path.exists(path):
-        if path.replace("\\", "/").split("/")[-1].replace(".", "")!=path.replace("\\", "/").split("/")[-1]:
-            path="/".join(path.replace("\\", "/").split("/")[:-1])
-        try:
-            os.makedirs(path)
-        except PermissionError:
-            pass
-
-def number(s):
-    try:
-        float(s)
-        return True
-    except ValueError:
-        return False
-
-def inOrNot(dic, key):
-    if key in dic:
-        return dic[key]
-    return key
-
-def saveFile():
-    with open("./data/StepNuserData.json", "w", encoding = "utf-8") as fil:
-        json.dump(user_data, fil, indent = 4)
-
-def saveInfo():
-    with open("./data/StepNinfo.json", "w", encoding = "utf-8") as fil:
-        json.dump(info, fil, indent = 4, ensure_ascii = False)
-
-def randString(length = 7):
-    rand = ""
-    for i in range(length):
-        rand += random.choice(string.digits)
-
-version = "Jun27"
-
-helps = {
-    "퍼센트": "최저가 알림 체크/업데이트 \n예: 퍼센트/퍼센트 1.0",
-    "max": "SOL/GST 비율 알림 체크/업데이트 \n예: max/max 27.0",
-    "min": "SOL/GST 비율 알림 체크/업데이트 \n예: min/min 27.0",
-    "데이터": "프로그램용 내부 크롤링 데이터 출력 \n예: 데이터",
-    "유저데이터": "유저 개인 설정 \n예: 데이터",
-    "기본데이터": "유저 개인 설정 \n예: 데이터",
-    "기본프린트": "프로그램용 출력 \n예: 기본프린트",
-    "프린트": "프로그램용 출력 \n예: 프린트",
-    "초대/링크/초대링크": "프로그램 공유용 링크",
-    "server": "returns server name",
-    "help": "message list",
-    "usage": "returns usage \n 예:usage/usage [command]"
-}
-
-helps_D = {
-    "refresh_code": "",
-    "code": "",
-    "execute": "",
-    "kill_execute": "",
-    "us": "",
-    "whole_data": "",
-    "naked_data": "",
-    "revive": "",
-    "퍼센트d": "최저가 알림 체크/업데이트 \n예: 퍼센트d/퍼센트d 1.0",
-    "maxd": "SOL/GST 비율 알림 체크/업데이트 \n예: maxd/maxd 27.0",
-    "mind": "SOL/GST 비율 알림 체크/업데이트 \n예: mind/mind 27.0",
-    "die": "",
-    "helpd": "",
-    "usaged": "",
-    "screenshot": "스크린샷 전송. \n예: screenshot OR screenshot 130 400 100 100"
-}
-
-name = "StepN"
-curB = ""
-mkIfNone("./dataxl")
-mkIfNone("./img")
-mkIfNone("./data")
-mkIfNone("./log")
-wb = Workbook()
-ws1 = wb.active
-start = time.strftime("%Y%m%d%H%M%S")
-die = False
-revive = False
-trr = ""
-now = "l"
-coinlis = ["SOL", "GST", "GMT"]
-total_coinlist = []
-data = {}
-last = {}
-data["users"] = {}
-for you in info["subscribers"] + ["default"]:
-    data["users"][you] = {}
-
-recentBanDate = {you:"0" for you in info["subscribers"]}
-
-info["invitation_code"] = randString(7)
-saveInfo()
-
-colorama.init()
-
-def upbit(BTC = "BTC", cur = "KRW"):
-    htm = requests.get(f"https://api.upbit.com/v1/orderbook?markets={cur}-{BTC}", headers = {"User-Agent": "Mozilla/5.0"})
-    hack = htm.json()
-    
-    return [hack[0]["orderbook_units"][0]["bid_price"], hack[0]["orderbook_units"][0]["ask_price"], hack[0]["orderbook_units"][0]["bid_size"], hack[0]["orderbook_units"][0]["ask_size"]]
-
-def ftx(BTC = "BTC", cur = "USD"):
-    htm = requests.get(f"https://ftx.com/api/markets/{BTC}/{cur}/orderbook", headers = {"User-Agent": "Mozilla/5.0"})
-    hack = htm.json()
-    
-    return [hack["result"]["bids"][0][0], hack["result"]["asks"][0][0], hack["result"]["bids"][0][1], hack["result"]["asks"][0][1]]
-
-def fo(a):    
-    return "{0:.2f}".format(a).ljust(15)
-
-def fo2(a):
-    return "{0:.2f}".format(a).ljust(len("{0:.2f}".format(a)))
-
-def fo3(a):    
-    return "{0:.6f}".format(a).ljust(15)
-
-def fo4(a):    
-    return "{0:.6f}".format(a).ljust(len("{0:.6f}".format(a)))
-
 def getcoin():
-    base = {BTC: [10**8, 10**8, 10**8, 10**8] for BTC in coinlis}
-    for BTC in coinlis:
+    base = {BTC: [10**8, 10**8, 10**8, 10**8] for BTC in data["coinlist"]}
+    for BTC in data["coinlist"]:
         err = 0
         prblm = True
         while err < 10 and prblm:
             try:
-                base[BTC] = ftx(BTC, curB) if curB != "" else ftx(BTC)
+                base[BTC] = ftx(BTC, manifest["curB"]) if manifest["curB"] != "" else ftx(BTC)
                 prblm = False
             except KeyError:
                 err += 1
                 time.sleep(0.5)
     shoesPrice = stepNPrice()
     
-    global data
-    global ws1
     data["market"] = {
-        "base": {BTC: {} for BTC in coinlis},
+        "base": {BTC: {} for BTC in data["coinlist"]},
         "shoesPrice": 0.001
     }
     try:
-        for BTC in coinlis:
+        for BTC in data["coinlist"]:
             data["market"]["base"][BTC]["bid"] = float(base[BTC][0])
             data["market"]["base"][BTC]["ask"] = float(base[BTC][1])
         data["market"]["shoesPrice"] = shoesPrice
@@ -323,15 +267,15 @@ def getcoin():
         data["market"]["SOLGSTRatio"] = float(base["SOL"][0]) / float(base["GST"][1])
         ws1.cell(ws1.max_row, 1, shoesPrice)
         ws1.cell(ws1.max_row, 2, data["market"]["shoesPriceUSD"])
-        for BTC in coinlis:
-            n = coinlis.index(BTC)
+        for BTC in data["coinlist"]:
+            n = data["coinlist"].index(BTC)
             ws1.cell(ws1.max_row, 2 * n + 3, float(base[BTC][0]))
             ws1.cell(ws1.max_row, 2 * n + 4, float(base[BTC][1]))
         ws1.cell(ws1.max_row, 9, data["market"]["cost"])
         ws1.cell(ws1.max_row, 10, data["market"]["premium"])
         ws1.cell(ws1.max_row, 11, data["market"]["SOLGSTRatio"])
     except KeyError:
-        data["market"] = last["market"]
+        data["market"] = data["prev_data"]
 
 def printer(you = "default"):
     pre_col = colored(fo2(data["market"]["premium"]), "green" if data["market"]["premium"] > float(user_data[you]["percentage"]) else "red")
@@ -344,8 +288,7 @@ def printer(you = "default"):
     rat_col = colored(fo2(data["market"]["SOLGSTRatio"]), rat_c)
     
     print(f"StepN 최저가:  {data['market']['shoesPrice']} SOL")
-    for BTC in coinlis:
-        print(f"{BTC} FT가:  {fo3(data['market']['base'][BTC]['bid'])} {fo4(data['market']['base'][BTC]['ask'])}")
+    print("\n".join([f"{BTC} FT가:  {fo3(data['market']['base'][BTC]['bid'])} {fo4(data['market']['base'][BTC]['ask'])}" for BTC in data["coinlist"]]))
     print(f"달러 가격:  {fo2(data['market']['shoesPriceUSD'])} USD")
     print(f"StepN 원가:  {fo2(data['market']['cost'])} USD")
     print(f"프리미엄: {pre_col}%")
@@ -356,13 +299,12 @@ def final():
     
 def printerG():
     instantS = ""
-    instantS += f"StepN 최저가:  {data['market']['shoesPrice']} SOL"+"\n"
-    for BTC in coinlis:
-        instantS += f"{BTC} FT가:  {fo3(data['market']['base'][BTC]['bid'])} {fo4(data['market']['base'][BTC]['ask'])}"+"\n"
-    instantS += f"달러 가격:  {fo2(data['market']['shoesPriceUSD'])} USD"+"\n"
-    instantS += f"StepN 원가:  {fo2(data['market']['cost'])} USD"+"\n"
-    instantS += f"프리미엄: {fo2(data['market']['premium'])}%"+"\n"
-    instantS += f"SOL/GST: {fo2(data['market']['SOLGSTRatio'])}"+"\n"
+    instantS += f"StepN 최저가:  {data['market']['shoesPrice']} SOL" + "\n"
+    instantS += "\n".join([f"{BTC} FT가:  {fo3(data['market']['base'][BTC]['bid'])} {fo4(data['market']['base'][BTC]['ask'])}" for BTC in data["coinlist"]]) + "\n"
+    instantS += f"달러 가격:  {fo2(data['market']['shoesPriceUSD'])} USD" + "\n"
+    instantS += f"StepN 원가:  {fo2(data['market']['cost'])} USD" + "\n"
+    instantS += f"프리미엄: {fo2(data['market']['premium'])}%" + "\n"
+    instantS += f"SOL/GST: {fo2(data['market']['SOLGSTRatio'])}" + "\n"
     instantS += "\n"
     return instantS
 
@@ -379,11 +321,7 @@ def dataFormat(jso):
         return ""
 
 def handle(msg):
-    global die
-    global revive
-    global user_data
-    global info
-    content_type, _, chat_id, _, _ = telepot.glance(msg)
+    content_type, _, chat_id = telepot.glance(msg)
     chat_id = str(chat_id)
     if content_type == "text":
         command = msg["text"].split(" ")[0]
@@ -396,7 +334,7 @@ def handle(msg):
                         saveFile()
                         bot.sendMessage(chat_id, f"{command}->{content}")
                     
-                    elif command.lower() in list(helps_D.keys()):
+                    elif command.lower() in list(manifest["commands_admin"].keys()):
                         if chat_id in info["admin"]:
                             if command in ["퍼센트d", "maxd", "mind"]:
                                 user_data["default"][["percentage", "ratioMax", "ratioMin"][["퍼센트d", "maxd", "mind"].index(command)]] = float(content)
@@ -428,19 +366,19 @@ def handle(msg):
                             else:
                                 bot.sendMessage(chat_id, "None")
                     else:
-                        bot.sendMessage(chat_id, "명령어 리스트: " + ", ".join(list(helps.keys())) + "\n값 입력은 뒤에 숫자를 넣는다\nex) 환율 40")
+                        bot.sendMessage(chat_id, "명령어 리스트: " + ", ".join(list(manifest["commands"].keys())) + "\n값 입력은 뒤에 숫자를 넣는다\nex) 환율 40")
             
                 elif command.lower() == "usage":
-                    if content in helps.keys():
-                        bot.sendMessage(chat_id, f"{content}: {helps[content]}")
+                    if content in manifest["commands"]:
+                        bot.sendMessage(chat_id, f"{content}: {manifest['commands'][content]}")
                     else:
-                        bot.sendMessage(chat_id, "\n".join([f"{com}:{helps[com]}" for com in helps]))
+                        bot.sendMessage(chat_id, "\n".join([f"{com}:{manifest['commands'][com]}" for com in manifest["commands"]]))
                 
                 else:
                     bot.sendMessage(chat_id, "Message not acceptable")
             else:
                 if command in ["퍼센트", "max", "min"]:
-                    content=user_data[chat_id][["percentage", "ratioMax", "ratioMin"][["퍼센트", "max", "min"].index(command)]]
+                    content = user_data[chat_id][["percentage", "ratioMax", "ratioMin"][["퍼센트", "max", "min"].index(command)]]
                     bot.sendMessage(chat_id, f"{command}={content}")
                 elif command == "데이터":
                     bot.sendMessage(chat_id, str(data))
@@ -461,16 +399,15 @@ def handle(msg):
                 elif command in ["링크", "초대", "초대링크"]:
                     bot.sendMessage(chat_id, "t.me/" + info["bot_id"])
                 elif command.lower() == "help":
-                    bot.sendMessage(chat_id, "command list: " + ", ".join(list(helps.keys())))
+                    bot.sendMessage(chat_id, "command list: " + ", ".join(list(manifest["commands"].keys())))
                 elif command.lower() == "usage":
-                    bot.sendMessage(chat_id, "\n".join([f"{com}:{helps[com]}" for com in helps]))
+                    bot.sendMessage(chat_id, "\n".join([f"{com}:{manifest['commands'][com]}" for com in manifest["commands"]]))
                 elif command == "server":
-                    bot.sendMessage(chat_id, inOrNot(info["server_list"], socket.gethostname()))
-                elif command.lower() in list(helps_D.keys()):
+                    bot.sendMessage(chat_id, fl(info["server_list"], socket.gethostname()))
+                elif command.lower() in list(manifest["commands_admin"].keys()):
                     if chat_id in info["admin"]:
                         if command.lower() == "refresh_code":
-                            info["invitation_code"] = randString(7)
-                            saveInfo()
+                            data["invitation_code"] = randString(7)
                         elif command.lower() == "whole_data":
                             whole_lis=[i + "\n"+dataFormat(user_data[i]) for i in user_data.keys()]
                             try:
@@ -485,24 +422,24 @@ def handle(msg):
                                 for x in range(int(len(json.dumps(user_data, indent = 4))/4095)+1):
                                     bot.sendMessage(chat_id, json.dumps(user_data, indent = 4)[x * 4095:(x + 1) * 4095])
                         elif command.lower() == "code":
-                            bot.sendMessage(chat_id, info["invitation_code"])
+                            bot.sendMessage(chat_id, data["invitation_code"])
                         elif command.lower() == "us":
                             bot.sendMessage(chat_id, "\n".join([fl(info["subscriber_name_dict"], you) for you in info["subscribers"]]))
                         elif command.lower() == "white":
                             bot.sendMessage(chat_id, "\n".join(info["whitelist"]))
                         elif command.lower() == "revive":
                             bot.sendMessage(chat_id, "See you soon")
-                            revive=True
+                            data["revive"] = True
                         elif command.lower() == "die":
                             bot.sendMessage(chat_id, "See you later")
-                            die=True
+                            data["die"] = True
                         elif command.lower() in ["퍼센트d", "maxd", "mind"]:
                             content=user_data["default"][["percentage", "ratioMax", "ratioMin"][["퍼센트d", "maxd", "mind"].index(command)]]
                             bot.sendMessage(chat_id, f"{command}={content}")
                         elif command.lower() == "helpd":
-                            bot.sendMessage(chat_id, "command list: " + ", ".join(list(helps_D.keys())))
+                            bot.sendMessage(chat_id, "command list: " + ", ".join(list(manifest["commands_admin"].keys())))
                         elif command.lower() == "usaged":
-                            bot.sendMessage(chat_id, "\n".join([f"{com}:{helps_D[com]}" for com in helps_D]))
+                            bot.sendMessage(chat_id, "\n".join([f"{com}:{manifest['commands_admin'][com]}" for com in manifest["commands_admin"]]))
                         elif command.lower() == "screenshot":
                             bot.sendMessage(chat_id, "Processing...")
                             img = pyautogui.screenshot(region = setting["dimension"])
@@ -512,38 +449,38 @@ def handle(msg):
                                 bot.sendPhoto(chat_id, fil)
                             os.remove("./img/" + img_name)
                         else:
-                            bot.sendMessage(chat_id, "None, command list: " + ", ".join(list(helps_D.keys())))
+                            bot.sendMessage(chat_id, "None, command list: " + ", ".join(list(manifest["commands_admin"].keys())))
                     else:
                         bot.sendMessage(chat_id, "Forbidden access")
                 else:
-                    bot.sendMessage(chat_id, "명령어 리스트: " + ", ".join(list(helps.keys())) + "\n값 입력은 뒤에 숫자를 넣는다\nex) 환율 40")
+                    bot.sendMessage(chat_id, "명령어 리스트: " + ", ".join(list(manifest["commands"].keys())) + "\n값 입력은 뒤에 숫자를 넣는다\nex) 환율 40")
         elif chat_id in info["whitelist"]:
             info["subscribers"].append(chat_id)
             saveInfo()
             user_data[chat_id] = user_data["default"]
-            recentBanDate[chat_id] = "0"
+            data["recent_ban_date"][chat_id] = "0"
             bot.sendMessage(chat_id, "Welcome")
-            alert_bot.sendMessage(info["developer"], f"{name}: {chat_id} was added")   
+            alert_bot.sendMessage(info["developer"], f"{manifest['name']}: {chat_id} was added")   
         else:
-            if command == info["invitation_code"]:
+            if command == data["invitation_code"]:
                 info["subscribers"].append(chat_id)
                 user_data[chat_id] = user_data["default"]
-                recentBanDate[chat_id] = "0"
+                data["recent_ban_date"][chat_id] = "0"
                 bot.sendMessage(chat_id, "Welcome")
                 alert_bot.sendMessage(info["developer"], f"{chat_id} was added")          
-                info["invitation_code"] = randString(7)
-                saveInfo()
+                data["invitation_code"] = randString(7)
             else:
                 bot.sendMessage(chat_id, f"Unknown access. Contact developer t.me/{info['developer_id']} for the key")
                 bot.sendMessage(info["developer"], f"{chat_id} tried to access: {msg['text']}")
 
 bot.message_loop(handle)
 try:
-    while not die:
-        if now != time.strftime("%M"):
+    while not data["die"]:
+        if data["execute_on"] <= time.time():
+            data["execute_on"] = time.time() + 60
             ws1[f"A{ws1.max_row+1}"] = time.strftime("%Y%m%d%H%M%S")
             getcoin()
-            last = data
+            data["prev_data"] = data["market"]
             
             print("\n\n\n\n\n\n\n\n\n\n\n\n")
             printer()
@@ -566,24 +503,19 @@ try:
                     elif data["market"]["SOLGSTRatio"] < user_data[you]["ratioMin"]:
                         bot.sendMessage(you, data["users"][you]["totalSs"])
                 except Exception:
-                    if recentBanDate[you] != time.strftime("%Y-%m-%d"):
-                        alert_bot.sendMessage(info["developer"], f"{name}: {fl(info['subscriber_name_dict'], you)} blocked this bot")
-                        recentBanDate[you] = time.strftime("%Y-%m-%d")
-            now = time.strftime("%M")
-        if revive:
+                    if data["recent_ban_date"][you] != time.strftime("%Y-%m-%d"):
+                        alert_bot.sendMessage(info["developer"], f"{manifest['name']}: {fl(info['subscriber_name_dict'], you)} blocked this bot")
+                        data["recent_ban_date"][you] = time.strftime("%Y-%m-%d")
+        if data["revive"]:
             sys.exit()
         time.sleep(3)
-    if die:
-        print(f"error {time.strftime('%Y-%m-%d-%H:%M:%S')}")
-        wb.save(f"./dataxl/{name}{start}.xlsx")
         
-except Exception:
-    trr = traceback.format_exc()
+except:
+    data["error"] = traceback.format_exc()
     os.system("start cmd /C " + sys.argv[0])
     winsound.PlaySound("./data/에러.wav", winsound.SND_ALIAS)
 
-if not die:
-    print("error "+time.strftime("%Y-%m-%d-%H:%M:%S"))
-    wb.save(f"./dataxl/{name}{start}.xlsx")
-    with open("./log/{sys.argv[0].split('\\')[-1].split('.')[0]}.txt", "a", encoding = "utf-8") as fil:
-        fil.write("시간: {time.strftime('%Y-%m-%d-%H:%M:%S')}\n\n{trr}\n---------------------------\n\n")
+print(f"error {time.strftime('%Y-%m-%d-%H:%M:%S')}")
+wb.save(f"./dataxl/{manifest['name']}{data['start']}.xlsx")
+with open("./log/" + sys.argv[0].split('\\')[-1].split('.')[0] + ".txt", "a", encoding = "utf-8") as fil:
+    fil.write("시간: {time.strftime('%Y-%m-%d-%H:%M:%S')}\n\n{data['error']}\n---------------------------\n\n")
