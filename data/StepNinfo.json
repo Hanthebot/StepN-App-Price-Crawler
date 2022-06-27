@@ -12,7 +12,6 @@
         "{TELEGRAM_ID_1}",
         "{TELEGRAM_ID_2}"
     ],
-    "invitation_code": "{AUTOMATICALLY_ENTERED}",
     "whitelist": [
         "{TELEGRAM_ID}",
         "{TELEGRAM_ID}"
