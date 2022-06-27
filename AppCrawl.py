@@ -211,7 +211,7 @@ def read_screen(coordinate, maxTry = setting["detectionMaxTry"]):
     
     while score < maxTry and len(lis) == 0:
         time.sleep(setting["retryDelay"])
-        scanned, img = scanSection(coordinate)
+        scanned, _ = scanSection(coordinate)
         scanned = scanned.split(" ")[0]
         filtered = onlyNumber(scanned)
         filteredP = filtered.replace(".", "")
@@ -219,7 +219,6 @@ def read_screen(coordinate, maxTry = setting["detectionMaxTry"]):
             numerified = float(filtered) if number(filtered) else float(filteredP)
             lis.append(numerified)
             break
-        img.save(f"./img/Error_{time.strftime('%Y%m%d_%H%M')}-{score}_as_{scanned.replace('.', '-')}.png")
         score += 1
         
     if len(lis) == 0:
