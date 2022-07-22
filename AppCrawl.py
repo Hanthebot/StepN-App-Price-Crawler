@@ -100,9 +100,9 @@ alert_bot = telepot.Bot(info["alert_bot_token"])
 
 user_data = {
     "default": {
-        "percentage": {category: 0.0 for category in setting["categories"] + ["general"]},
         "ratioMax": 28,
         "ratioMin": 26,
+        "percentage": {category: 0.0 for category in setting["categories"] + ["general"]},
         "priceMax": {category: 60 for category in setting["categories"] + ["general"]},
         "priceMin": {category: 20 for category in setting["categories"] + ["general"]}
     }
