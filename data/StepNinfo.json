@@ -21,5 +21,11 @@
     },
     "server_list": {
         "{DESKTOP_HOSTNAME}": "{DESKTOP_NAME}"
-    }
+    },
+    "formula": "(360 * {GST} + 40 * {GMT}) * 1.06",
+    "interval": 0.5,
+    "msgGap": 0.1,
+    "errLim": 10,
+    "msgTry": 10,
+    "period": 60
 }
