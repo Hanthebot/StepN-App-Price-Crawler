@@ -1,7 +1,9 @@
 {
     "default": {
-        "percentage": 0.0,
         "ratioMax": 28,
-        "ratioMin": 26
+        "ratioMin": 26,
+        "percentage": {"Trainer": 0.0, "general": 0.0},
+        "priceMax": {"Trainer": 60, "general": 60},
+        "priceMin": {"Trainer": 20, "general": 20}
     }
 }
