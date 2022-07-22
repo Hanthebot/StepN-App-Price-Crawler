@@ -8,6 +8,8 @@
         "dragDelay" : 2,
         "detectionMaxTry": 10,
         "saveImg_C" : [0.0541, 0.2401, 0.4505, 0.3445],
-        "dimension" : [1315, 33, 555, 987]
+        "dimension" : [1315, 33, 555, 987],
+        "categories": ["Trainer"],
+        "optional": {}
         }
 }
