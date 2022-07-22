@@ -2,8 +2,26 @@
     "default": {
         "ratioMax": 28,
         "ratioMin": 26,
-        "percentage": {"Trainer": 0.0, "general": 0.0},
-        "priceMax": {"Trainer": 60, "general": 60},
-        "priceMin": {"Trainer": 20, "general": 20}
+        "percentage": {
+            "walker": 0.0,
+            "jogger": 0.0,
+            "runner": 0.0,
+            "trainer": 0.0,
+            "general": 0.0
+        },
+        "priceMax": {
+            "walker": 60,
+            "jogger": 60,
+            "runner": 60,
+            "trainer": 60,
+            "general": 60
+        },
+        "priceMin": {
+            "walker": 20,
+            "jogger": 20,
+            "runner": 20,
+            "trainer": 20,
+            "general": 20
+        }
     }
 }
