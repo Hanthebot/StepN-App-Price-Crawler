@@ -54,13 +54,27 @@ if "place" in setting["optional"]:
     except OSError:
         pass
 
-def setting_unpack():
+def coorCalculate(ratio, type_):
     xi, yi, x, y = setting["dimension"]
+    if type_ == "length_x":
+        return int(ratio * x)
+    elif type_ == "length_y":
+        return int(ratio * y)
+    elif type_ == "point_xy":
+        return (int(xi + ratio[0] * x), int(yi + ratio[1] * y))
+    elif type_ == "dimension_xy":
+        return (int(xi + ratio[0] * x), int(yi + ratio[1] * y), int(ratio[2] * x), int(ratio[3] * y))
+
+def setting_unpack():
     setting["dimension"] = tuple(setting["dimension"])
-    setting["coordPrice"] = (int(xi + setting["coordPrice_C"][0] * x), int(yi + setting["coordPrice_C"][1] * y), int(setting["coordPrice_C"][2] * x), int(setting["coordPrice_C"][3] * y))
-    setting["refreshPoint"] = (int(xi + setting["refreshPoint_C"][0] * x), int(yi + setting["refreshPoint_C"][1] * y))
-    setting["dragLength"] = int(setting["dragLength_C"] * y)
-    setting["saveImg"] = (int(xi + setting["saveImg_C"][0] * x), int(yi + setting["saveImg_C"][1] * y), int(setting["saveImg_C"][2] * x), int(setting["saveImg_C"][3] * y))
+    setting["dragLength"] = coorCalculate(setting["dragLength_C"], "length_y")
+    for key in setting["point_xy_C"]:
+        setting[key] = coorCalculate(setting["point_xy_C"][key], "point_xy")
+    setting["categoryCoor"] = {}
+    for key in setting["categoryCoor_C"]:
+        setting["categoryCoor"][key] = coorCalculate(setting["categoryCoor_C"][key], "point_xy")
+    for key in setting["dimension_xy_C"]:
+        setting[key] = coorCalculate(setting["dimension_xy_C"][key], "dimension_xy")
 
 setting_unpack()
 
@@ -142,8 +156,10 @@ manifest = {
     "curB": "",
     "commands": {
         "퍼센트": "최저가 알림 체크/업데이트 \n예: 퍼센트/퍼센트 1.0",
-        "max": "SOL/GST 비율 알림 체크/업데이트 \n예: max/max 27.0",
-        "min": "SOL/GST 비율 알림 체크/업데이트 \n예: min/min 27.0",
+        "ratiomax": "SOL/GST 비율 알림 체크/업데이트 \n예: ratiomax/ratiomax 27.0",
+        "ratiomin": "SOL/GST 비율 알림 체크/업데이트 \n예: ratiomin/ratiomin 27.0",
+        "pricemax": "StepN 가격 알림 체크/업데이트 \n예: pricemax [category/general]/pricemax [category/general] 60",
+        "pricemin": "StepN 가격 알림 체크/업데이트 \n예: pricemin [category/general]/pricemin [category/general] 20",
         "데이터": "프로그램용 내부 크롤링 데이터 출력 \n예: 데이터",
         "유저데이터": "유저 개인 설정 \n예: 데이터",
         "기본데이터": "유저 개인 설정 \n예: 데이터",
@@ -165,8 +181,10 @@ manifest = {
         "naked_data": "",
         "revive": "",
         "퍼센트d": "최저가 알림 체크/업데이트 \n예: 퍼센트d/퍼센트d 1.0",
-        "maxd": "SOL/GST 비율 알림 체크/업데이트 \n예: maxd/maxd 27.0",
-        "mind": "SOL/GST 비율 알림 체크/업데이트 \n예: mind/mind 27.0",
+        "ratiomaxd": "SOL/GST 비율 알림 체크/업데이트 \n예: ratiomaxd/ratiomaxd 27.0",
+        "ratiomind": "SOL/GST 비율 알림 체크/업데이트 \n예: ratiomind/ratiomind 27.0",
+        "pricemaxd": "StepN 가격 알림 체크/업데이트 \n예: pricemaxd [category/general]/pricemaxd [category/general] 60",
+        "pricemind": "StepN 가격 알림 체크/업데이트 \n예: pricemind [category/general]/pricemind [category/general] 20",
         "die": "",
         "helpd": "",
         "usaged": "",
@@ -237,17 +255,38 @@ def read_screen(coordinate, maxTry = setting["detectionMaxTry"]):
         score += 1
     return lis
 
-def refresh(coor1 = setting["refreshPoint"], drag = setting["dragLength"], duration = setting["dragDelay"]):
+def refresh(coor1 = setting["refreshPoint"], drag = setting["dragLength"],):
     pos = pyautogui.position()
     pyautogui.moveTo(coor1)
     pyautogui.dragTo(coor1[0], coor1[1] + drag, setting["dragDuration"], button = "left")
     pyautogui.moveTo(pos)
+    time.sleep(setting["dragDelay"])
+
+def setCategory(category_, duration = setting["dragDelay"]):
+    pos = pyautogui.position()
+    pyautogui.click(setting["filter"])
+    time.sleep(setting["clickDelay"])
+    if setCategory.initial:
+        setCategory.initial = False
+        pyautogui.click(setting["clear"])
+        time.sleep(duration)
+        pyautogui.click(setting["filter"])
+        time.sleep(setting["clickDelay"])
+        pyautogui.click(setting["sneakers"])
+        time.sleep(setting["clickDelay"])
+    pyautogui.click(setting["categoryCoor"][category_])
+    time.sleep(setting["clickDelay"])
+    pyautogui.click(setting["confirm"])
+    time.sleep(setting["clickDelay"])
+    pyautogui.moveTo(pos)
     time.sleep(duration)
 
+setCategory.initial = True
+
 def stepNPrice(coordinate = setting["coordPrice"]):
-    refresh()
     filtered_data = {}
     for category_ in setting["categories"]:
+        setCategory(category_)
         filtered_data[category_] = read_screen(coordinate)
     return filtered_data
 
@@ -297,30 +336,38 @@ def getcoin():
     except KeyError:
         data["market"] = data["prev_data"]
     
-def printerG(you_ = "default", color = False):
-    pre_dict = {category_: fo2(data["market"]["shoes"][category_]["premium"]) for category_ in setting["categories"]}
+def printerG(category_, you_ = "default", color = False):
+    pre_val = fo2(data["market"]["shoes"][category_]["premium"])
+    if color:
+        pre_val = colored(pre_val, "green" if data["market"]["shoes"][category_]["premium"] > float(user_data[you_]["percentage"][category_]) else "red")
     instantS = ""
-    for category_ in setting["categories"]:
-        if color:
-            pre_dict[category_] = colored(pre_dict[category_], "green" if data["market"]["shoes"][category_]["premium"] > float(user_data[you_]["percentage"][category_]) else "red")
-        instantS += f"StepN {category_}:  {data['market']['shoes'][category_]['price']} SOL" + "\n"
-        instantS += f"달러 가격:  {fo2(data['market']['shoes'][category_]['priceUSD'])} USD" + "\n"
-        instantS += f"프리미엄: {pre_dict[category_]}%" + "\n"
-        instantS += "\n"
+    instantS += f"StepN {fl(setting['categoriesName'], category_)}:  {data['market']['shoes'][category_]['price']} SOL" + "\n"
+    instantS += f"달러 가격:  {fo2(data['market']['shoes'][category_]['priceUSD'])} USD" + "\n"
+    instantS += f"프리미엄: {pre_val}%" + "\n"
     instantS += "\n"
     return instantS
-
     
-def firstG(you_ = "default", color = False):
+def firstGS(you_ = "default", color = False):
     pre_val = max([data["market"]["shoes"][category_]["premium"] for category_ in setting["categories"]])
-    catPre = setting["categories"][[data["market"]["shoes"][category_]["premium"] for category_ in setting["categories"]].index(pre_val)]
+    catPre = fl(setting["categoriesName"], setting["categories"][[data["market"]["shoes"][category_]["premium"] for category_ in setting["categories"]].index(pre_val)])
     pre_col = fo2(pre_val)
     min_val = min([data["market"]["shoes"][category_]["priceUSD"] for category_ in setting["categories"]])
-    catMin = setting["categories"][[data["market"]["shoes"][category_]["priceUSD"] for category_ in setting["categories"]].index(min_val)]
+    catMin = fl(setting["categoriesName"], setting["categories"][[data["market"]["shoes"][category_]["priceUSD"] for category_ in setting["categories"]].index(min_val)])
     min_col = fo2(min_val)
     max_val = max([data["market"]["shoes"][category_]["priceUSD"] for category_ in setting["categories"]])
-    catMax = setting["categories"][[data["market"]["shoes"][category_]["priceUSD"] for category_ in setting["categories"]].index(max_val)]
+    catMax = fl(setting["categoriesName"], setting["categories"][[data["market"]["shoes"][category_]["priceUSD"] for category_ in setting["categories"]].index(max_val)])
     max_col = fo2(max_val)
+    if color:
+        pre_col = colored(pre_col, "green" if pre_val > user_data[you_]["percentage"]["general"] else "red")
+        min_col = colored(min_col, "green" if min_val < user_data[you_]["priceMin"]["general"] else "red")
+        max_col = colored(max_col, "green" if max_val > user_data[you_]["priceMax"]["general"] else "red")
+    instantS = ""
+    instantS += f"프리미엄 최대:  {pre_col}% -{catPre}" + "\n"
+    instantS += f"StepN 최저가:  {min_col} USD -{catMin}" + "\n"
+    instantS += f"StepN 최고가:  {max_col} USD -{catMax}" + "\n"
+    return instantS
+
+def firstGC(you_ = "default", color = False):
     rat_col = fo2(data["market"]["SOLGSTRatio"])
     if color:
         rat_c = "red"
@@ -329,14 +376,7 @@ def firstG(you_ = "default", color = False):
         elif data["market"]["SOLGSTRatio"] < user_data[you_]["ratioMin"]:
             rat_c = "blue"        
         rat_col = colored(rat_col, rat_c)
-        pre_col = colored(pre_col, "green" if pre_val > user_data[you_]["percentage"]["general"] else "red")
-        min_col = colored(min_col, "green" if min_val < user_data[you_]["priceMin"]["general"] else "red")
-        max_col = colored(max_col, "green" if max_val > user_data[you_]["priceMax"]["general"] else "red")
     instantS = ""
-    instantS += f"프리미엄 최대:  {pre_col}% -{catPre}" + "\n"
-    instantS += f"StepN 최저가:  {min_col} USD -{catMin}" + "\n"
-    instantS += f"StepN 최고가:  {max_col} USD -{catMax}" + "\n"
-    instantS += "\n"
     instantS += "\n".join([f"{BTC} FT가:  {fo3(data['market']['base'][BTC]['bid'])} {fo4(data['market']['base'][BTC]['ask'])}" for BTC in data["coinlist"]]) + "\n"
     instantS += f"StepN 원가:  {fo2(data['market']['cost'])} USD" + "\n"
     instantS += f"SOL/GST: {rat_col}" + "\n"
@@ -360,20 +400,20 @@ def handle(msg):
     content_type, _, chat_id = telepot.glance(msg)
     chat_id = str(chat_id)
     if content_type == "text":
-        command = msg["text"].split(" ")[0].lower()
+        msg_params = msg["text"].split(" ")
+        command = msg_params[0].lower()
         if chat_id in info["subscribers"]:
-            if len(msg["text"].split(" ")) > 1:
-                content = msg["text"].split(" ")[1].replace("\n","")
+            if len(msg_params) > 1:
+                content = msg_params[1].replace("\n","")
                 if number(content):
-                    if command in ["퍼센트", "max", "min"]:
-                        user_data[chat_id][["percentage", "ratioMax", "ratioMin"][["퍼센트", "max", "min"].index(command)]] = float(content)
+                    if command in ["ratiomax", "ratiomin"]:
+                        user_data[chat_id][["ratioMax", "ratioMin"][["max", "min"].index(command)]] = float(content)
                         saveFile()
                         bot.sendMessage(chat_id, f"{command}->{content}")
-                    
                     elif command in list(manifest["commands_admin"].keys()):
                         if chat_id in info["admin"]:
-                            if command in ["퍼센트d", "maxd", "mind"]:
-                                user_data["default"][["percentage", "ratioMax", "ratioMin"][["퍼센트d", "maxd", "mind"].index(command)]] = float(content)
+                            if command in ["ratiomaxd", "ratiomind"]:
+                                user_data["default"][["ratioMax", "ratioMin"][["maxd", "mind"].index(command)]] = float(content)
                                 saveFile()
                                 bot.sendMessage(chat_id, f"{command}->{content}")
                                 
@@ -384,11 +424,10 @@ def handle(msg):
                                     bot.sendMessage(chat_id, f"{content} added")
                 
                             elif command == "screenshot":
-                                contents = msg["text"].split(" ")
                                 dimension = setting["dimension"]
                                 try:
-                                    if len(contents) >= 5:
-                                        dimension = tuple(int(c) for c in contents[1:5])
+                                    if len(msg_params) >= 5:
+                                        dimension = tuple(int(c) for c in msg_params[1:5])
                                 except IndexError:
                                     pass
                                 bot.sendMessage(chat_id, "Processing...")
@@ -403,18 +442,42 @@ def handle(msg):
                                 bot.sendMessage(chat_id, "None")
                     else:
                         bot.sendMessage(chat_id, "명령어 리스트: " + ", ".join(list(manifest["commands"].keys())) + "\n값 입력은 뒤에 숫자를 넣는다\nex) 환율 40")
-            
-                elif command == "usage":
-                    if content in manifest["commands"]:
-                        bot.sendMessage(chat_id, f"{content}: {manifest['commands'][content]}")
-                    else:
-                        bot.sendMessage(chat_id, "\n".join([f"{com}:{manifest['commands'][com]}" for com in manifest["commands"]]))
-                
                 else:
-                    bot.sendMessage(chat_id, "Message not acceptable")
+                    if command == "usage":
+                        if content in manifest["commands"]:
+                            bot.sendMessage(chat_id, f"{content}: {manifest['commands'][content]}")
+                        else:
+                            bot.sendMessage(chat_id, "\n".join([f"{com}:{manifest['commands'][com]}" for com in manifest["commands"]]))
+                    elif command in ["퍼센트", "pricemax", "pricemin"]:
+                        if content.lower() in setting["categories"] + ["general"]:
+                            if len(msg_params) > 2 and number(msg_params[2]):
+                                user_data[chat_id][["percentage", "priceMax", "priceMin"][["퍼센트", "pricemax", "pricemin"].index(command)]][content.lower()] = float(msg_params[2])
+                                bot.sendMessage(chat_id, f"{command}/{content}->{msg_params[2]}")
+                                saveFile()
+                            else:
+                                content = user_data[chat_id][["percentage", "priceMax", "priceMin"][["퍼센트", "pricemax", "pricemin"].index(command)]][content.lower()]
+                                bot.sendMessage(chat_id, f"{command}/{msg_params[1]}={content}")
+                        else:
+                            bot.sendMessage(chat_id, "Invalid category name")
+                    elif chat_id in info["admin"]:
+                        if command in ["퍼센트d", "pricemaxd", "pricemind"]:
+                            if content.lower() in setting["categories"] + ["general"]:
+                                if len(msg_params) > 2 and number(msg_params[2]):
+                                    user_data["default"][["percentage", "priceMax", "priceMin"][["퍼센트d", "pricemaxd", "pricemind"].index(command)]][content.lower()] = float(msg_params[2])
+                                    bot.sendMessage(chat_id, f"{command}/{content}->{msg_params[2]}")
+                                    saveFile()
+                                else:
+                                    content = user_data["default"][["percentage", "priceMax", "priceMin"][["퍼센트d", "pricemaxd", "pricemind"].index(command)]][content.lower()]
+                                    bot.sendMessage(chat_id, f"{command}/{msg_params[1]}={content}")
+                            else:
+                                bot.sendMessage(chat_id, "Invalid category name")
+                        else:
+                            bot.sendMessage(chat_id, "Message not acceptable")
+                    else:
+                        bot.sendMessage(chat_id, "Message not acceptable")
             else:
-                if command in ["퍼센트", "max", "min"]:
-                    content = user_data[chat_id][["percentage", "ratioMax", "ratioMin"][["퍼센트", "max", "min"].index(command)]]
+                if command in ["ratiomax", "ratiomin"]:
+                    content = user_data[chat_id][["ratioMax", "ratioMin"][["max", "min"].index(command)]]
                     bot.sendMessage(chat_id, f"{command}={content}")
                 elif command == "데이터":
                     bot.sendMessage(chat_id, str(data))
@@ -423,13 +486,17 @@ def handle(msg):
                 elif command == "기본데이터":
                     bot.sendMessage(chat_id,dataFormat(user_data["default"]))
                 elif command == "프린트":
-                    instant = ""
-                    instant += printerG()
+                    instant = firstGS(you_ = chat_id) + "\n"
+                    instant += firstGC(you_ = chat_id) + "\n"
+                    for category_ in setting["categories"]:
+                        instant += printerG(category_, you_ = chat_id)
                     instant += finalG()
                     bot.sendMessage(chat_id, instant)
                 elif command == "기본프린트":
-                    instant = ""
-                    instant += printerG()
+                    instant = firstGS() + "\n"
+                    instant += firstGC() + "\n"
+                    for category_ in setting["categories"]:
+                        instant += printerG(category_)
                     instant += finalG()
                     bot.sendMessage(chat_id, instant)
                 elif command in ["링크", "초대", "초대링크"]:
@@ -471,8 +538,8 @@ def handle(msg):
                         elif command == "die":
                             bot.sendMessage(chat_id, "See you later")
                             data["die"] = True
-                        elif command in ["퍼센트d", "maxd", "mind"]:
-                            content=user_data["default"][["percentage", "ratioMax", "ratioMin"][["퍼센트d", "maxd", "mind"].index(command)]]
+                        elif command in ["ratiomaxd", "ratiomind"]:
+                            content=user_data["default"][["ratioMax", "ratioMin"][["ratiomaxd", "ratiomind"].index(command)]]
                             bot.sendMessage(chat_id, f"{command}={content}")
                         elif command == "helpd":
                             bot.sendMessage(chat_id, "command list: " + ", ".join(list(manifest["commands_admin"].keys())))
@@ -522,14 +589,30 @@ try:
             refreshAlertOverlap()
             
             print("\n\n\n\n\n\n\n\n\n\n\n\n")
-            print(firstG(you_ = "default", color = True))
-            print(printerG(you_ = "default", color = True))
+            print(firstGS(you_ = "default", color = True))
+            print(firstGC(you_ = "default", color = True))
+            for category in setting["categories"]:
+                print(printerG(category, you_ = "default", color = True))
             print(finalG())
             
-            for you in info["subscribers"] + ["default"]:
-                data["users"][you]["totalSs"] = printerG() + finalG()
+            premiums = [data["market"]["shoes"][category]["premium"] for category in setting["categories"]]
+            prices = [data["market"]["shoes"][category]["priceUSD"] for category in setting["categories"]]
+            maxPreCat = setting["categories"][premiums.index(max(premiums))]
+            maxPriCat = setting["categories"][prices.index(max(prices))]
+            minPriCat = setting["categories"][prices.index(min(prices))]
+            
+            if data["market"]["shoes"][maxPreCat]["premium"] > user_data["default"]["percentage"]["general"] and data["alertOK"]["default"] and data["market"]["shoes"][maxPreCat]["valid"]:
+                data["alertOK"]["default"] = False
+            elif data["market"]["shoes"][maxPriCat]["priceUSD"] > user_data["default"]["priceMax"]["general"] and data["alertOK"]["default"] and data["market"]["shoes"][maxPriCat]["valid"]:
+                data["alertOK"]["default"] = False
+            elif data["market"]["shoes"][minPriCat]["priceUSD"] < user_data["default"]["priceMin"]["general"] and data["alertOK"]["default"] and data["market"]["shoes"][minPriCat]["valid"]:
+                data["alertOK"]["default"] = False
             for category in setting["categories"]:
                 if data["market"]["shoes"][category]["premium"] > user_data["default"]["percentage"][category] and data["alertOK"]["default"] and data["market"]["shoes"][category]["valid"]:
+                    data["alertOK"]["default"] = False
+                elif data["market"]["shoes"][category]["priceUSD"] > user_data["default"]["priceMax"][category] and data["alertOK"]["default"] and data["market"]["shoes"][category]["valid"]:
+                    data["alertOK"]["default"] = False
+                elif data["market"]["shoes"][category]["priceUSD"] < user_data["default"]["priceMin"][category] and data["alertOK"]["default"] and data["market"]["shoes"][category]["valid"]:
                     data["alertOK"]["default"] = False
             if data["market"]["SOLGSTRatio"] > user_data["default"]["ratioMax"] and data["alertOK"]["default"]:
                 data["alertOK"]["default"] = False
@@ -539,15 +622,30 @@ try:
                 i = 0
                 while i < info["msgTry"]:
                     try:
+                        if data["market"]["shoes"][maxPreCat]["premium"] > user_data[you]["percentage"]["general"] and data["alertOK"][you] and data["market"]["shoes"][maxPreCat]["valid"]:
+                            bot.sendMessage(you, firstGC() + "\n" + printerG(maxPreCat, you_ = you))
+                            data["alertOK"][you] = False
+                        elif data["market"]["shoes"][maxPriCat]["priceUSD"] > user_data[you]["priceMax"]["general"] and data["alertOK"][you] and data["market"]["shoes"][maxPriCat]["valid"]:
+                            bot.sendMessage(you, firstGC() + "\n" + printerG(maxPriCat, you_ = you))
+                            data["alertOK"][you] = False
+                        elif data["market"]["shoes"][minPriCat]["priceUSD"] < user_data[you]["priceMin"]["general"] and data["alertOK"][you] and data["market"]["shoes"][minPriCat]["valid"]:
+                            bot.sendMessage(you, firstGC() + "\n" + printerG(minPriCat, you_ = you))
+                            data["alertOK"][you] = False
                         for category in setting["categories"]:
                             if data["market"]["shoes"][category]["premium"] > user_data[you]["percentage"][category] and data["alertOK"][you] and data["market"]["shoes"][category]["valid"]:
-                                bot.sendMessage(you, data["users"][you]["totalSs"])
+                                bot.sendMessage(you, firstGC() + "\n" + printerG(category, you_ = you))
+                                data["alertOK"][you] = False
+                            elif data["market"]["shoes"][category]["priceUSD"] > user_data[you]["priceMax"][category] and data["alertOK"][you] and data["market"]["shoes"][category]["valid"]:
+                                bot.sendMessage(you, firstGC() + "\n" + printerG(category, you_ = you))
+                                data["alertOK"][you] = False
+                            elif data["market"]["shoes"][category]["priceUSD"] < user_data[you]["priceMin"][category] and data["alertOK"][you] and data["market"]["shoes"][category]["valid"]:
+                                bot.sendMessage(you, firstGC() + "\n" + printerG(category, you_ = you))
                                 data["alertOK"][you] = False
                         if data["market"]["SOLGSTRatio"] > user_data[you]["ratioMax"] and data["alertOK"][you]:
-                            bot.sendMessage(you, data["users"][you]["totalSs"])
+                            bot.sendMessage(you, firstGC())
                             data["alertOK"][you] = False
                         elif data["market"]["SOLGSTRatio"] < user_data[you]["ratioMin"] and data["alertOK"][you]:
-                            bot.sendMessage(you, data["users"][you]["totalSs"])
+                            bot.sendMessage(you, firstGC())
                             data["alertOK"][you] = False
                         if not data["alertOK"][you]:
                             time.sleep(info["msgGap"])
