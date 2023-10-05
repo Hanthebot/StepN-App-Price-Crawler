@@ -2,7 +2,7 @@ colorama~=0.4.4
 numpy~=1.19.5
 opencv-python~=4.5.5.64
 openpyxl~=3.0.9
-Pillow~=8.4.0
+Pillow
 PyAutoGUI~=0.9.53
 pytesseract~=0.3.8
 requests~=2.27.1
